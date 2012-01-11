@@ -19,6 +19,7 @@
 #include <vata/explicit_tree_useless.hh>
 #include <vata/explicit_tree_unreach.hh>
 #include <vata/explicit_tree_transl.hh>
+#include <vata/explicit_tree_incl_down.hh>
 #include <vata/explicit_tree_incl_up.hh>
 #include <vata/down_tree_incl_fctor.hh>
 #include <vata/down_tree_opt_incl_fctor.hh>
@@ -246,9 +247,11 @@ namespace VATA {
 	template <class SymbolType, class Rel>
 	bool CheckDownwardInclusionWithPreorder(const ExplicitTreeAut<SymbolType>& smaller,
 		const ExplicitTreeAut<SymbolType>& bigger, const Rel& preorder) {
-
+/*
 		return CheckDownwardTreeInclusion<ExplicitTreeAut<SymbolType>,
 			VATA::DownwardInclusionFunctor>(smaller, bigger, preorder);
+*/
+		return ExplicitDownwardInclusion::Check(smaller, bigger, preorder);
 
 	}
 
