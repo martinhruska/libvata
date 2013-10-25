@@ -193,7 +193,6 @@ protected:// methods
 				", got " + Convert::ToString(doesInclusionHold));
 		}
 	}
-
 	void testDownwardSimulation()
 	{
 		auto testfileContent = ParseTestFile(DOWN_SIM_TIMBUK_FILE.string());
@@ -275,6 +274,11 @@ protected:// methods
 			}
 		}
 	}
+};
+
+class FiniteAutFixture : TreeAutFixture
+{
+protected:
 };
 
 /******************************************************************************

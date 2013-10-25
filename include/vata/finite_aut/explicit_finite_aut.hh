@@ -67,7 +67,7 @@ public: // public data types
 		}
 	};
 
-	using AlphabetType = std::shared_ptr<Alphabet>;
+	using AlphabetType      = std::shared_ptr<Alphabet>;
 
 	// Stateset is unordered_set with operation for checking subset
 	GCC_DIAG_OFF(effc++)
@@ -232,6 +232,11 @@ public: // public methods
 		size_t                  /* size */) const
 	{
 		throw NotImplementedException(__func__);
+	}
+
+	static SymbolType GetZeroSymbol()
+	{
+		return 0;
 	}
 };
 #endif

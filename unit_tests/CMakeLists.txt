@@ -48,6 +48,7 @@ set(TESTS
 	"bdd_bu_tree_aut_test"
 	"bdd_td_tree_aut_test"
   "explicit_tree_aut_test"
+#  "explicit_finite_aut_test"
 )
 
 foreach (TEST ${TESTS})
