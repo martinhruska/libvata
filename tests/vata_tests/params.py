@@ -9,8 +9,8 @@ class Params():
 
     def initParser(self):
         group = self.__parser.add_mutually_exclusive_group()
-        group.add_argument("-l", "--learn", nargs=1, type=str, help="learn a new test set and saves it to given file")
-        group.add_argument("-t", "--test", nargs=1, type=str, help="test on a given test case defined by a given file")
+        group.add_argument("-l", "--learn", nargs=1, type=str, help="learn new test set and saves it to given file")
+        group.add_argument("-t", "--test", nargs=1, type=str, help="test on given test case defined by given file")
         group.add_argument("-c", "--check", action="store_true", help="perform tests over a given automata")
         self.__parser.add_argument("-d", "--dir", nargs=1, type=str, help='directory with automata to be tested')
         self.__parser.add_argument("-r", nargs='?', type=str, help='encodings to be test')
