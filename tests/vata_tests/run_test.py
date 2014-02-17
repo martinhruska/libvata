@@ -93,7 +93,7 @@ class RunTest:
         return res
 
     def getFileList(self, pathToDir):
-        return map(lambda x: pathToDir+x, [f for f in listdir(pathToDir) if isfile(join(pathToDir,f))])
+        return map(lambda x: os.path.join(pathToDir,x), [f for f in listdir(pathToDir) if isfile(join(pathToDir,f))])
 
     def getPrinter(self, mode, params):
         if mode == self.modeCheck:
