@@ -37,6 +37,9 @@ class Params():
 
     def processArguments(self, argv):
         self.__args = self.__parser.parse_args()
+        
+        if not os.path.isdir(self.__args.dir):
+            raise Exception("{0} is not directory".format{0})
         """
         if len(argv) < 1 and len(argv)%2 == 0:
             raise Exception("Not enought parameters")
