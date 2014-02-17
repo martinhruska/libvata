@@ -1,4 +1,5 @@
 import argparse
+import os
 
 class Params():
     defaultPath = "../../build/cli/vata"
@@ -8,14 +9,14 @@ class Params():
         self.initParser()
 
     def initParser(self):
-        group = self.__parser.add_mutually_exclusive_group()
+        group = self.__parser.add_mutually_exclusive_group(required=True)
         group.add_argument("-l", "--learn", nargs=1, type=str, help="learn new test set and saves it to given file")
         group.add_argument("-t", "--test", nargs=1, type=str, help="test on given test case defined by given file")
         group.add_argument("-c", "--check", action="store_true", help="perform tests over a given automata")
-        self.__parser.add_argument("-d", "--dir", nargs=1, type=str, help='directory with automata to be tested')
-        self.__parser.add_argument("-r", nargs='?', type=str, help='encodings to be test')
+        self.__parser.add_argument("-d", "--dir", nargs=1, required=True, type=str, help='directory with automata to be tested')
+        self.__parser.add_argument("-r", nargs='?', type=str, required=True, help='encodings to be test')
         self.__parser.add_argument("-b","--binary", nargs=1, type=str, help='path to VATA cli binary file')
-        self.__parser.add_argument("-a","--action", nargs=1, type=str, help='operation over automata')
+        self.__parser.add_argument("-a","--action", nargs=1, required=True, type=str, help='operation over automata')
         self.__parser.add_argument("-e", nargs='?', type=str, help='params for VATA library')
 
 

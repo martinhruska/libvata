@@ -1,5 +1,9 @@
 #! /usr/bin/python3
 
+# VATA tests main file
+# Run this script to run the tests.
+# For more information run this script with -h or --help option
+
 import sys
 import os
 from params import Params

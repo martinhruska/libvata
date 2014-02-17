@@ -39,22 +39,24 @@ class RunTest:
             results = {}
             aut1 = automataDir+testInfo[aut1Index]
             aut2 = automataDir+testInfo[aut2Index]
-            results = list(self.runTestsOverEncs(execute, params, aut1, aut2).values())
+            resDir = self.runTestsOverEncs(execute, params, aut1, aut2)
+            results = list(resDir.values())
             if self.checkTestCorrectness(results) and results[0] == testInfo[correctResIndex]:
                 printer.printTestOK(aut1, aut2, results[0])
             else:
-                printer.printTestFail(aut1, aut2)
+                printer.printTestFail(aut1, aut2, resDir)
 
     def runTestsInDir(self, execute, printer, params):
         files = [x for x in self.getFileList(params.getDir())]
         for aut1 in files:
             for aut2 in files:
-                results = list(self.runTestsOverEncs(execute, params, aut1, aut2).values())
+                resDir = self.runTestsOverEncs(execute, params, aut1, aut2)
+                results = list(resDir.values())
                 if self.checkTestCorrectness(results):
                     # print automata names and also wheather inclusion holds or not
                     printer.printTestOK(aut1, aut2, results[0])
                 else:
-                    printer.printTestFail(aut1, aut2)
+                    printer.printTestFail(aut1, aut2, resDir)
 
 
     def runTestsOverEncs(self, execute, params, aut1, aut2):

@@ -1,4 +1,5 @@
 import os
+import sys
 
 class PrinterCheck:
     def __init__(self):
@@ -7,12 +8,17 @@ class PrinterCheck:
 
     def printTestOK(self, aut1, aut2, res):
         self.__testsOk += 1
+        aut1Name = os.path.basename(aut1)
+        aut2Name = os.path.basename(aut2)
         # print automata names and also wheather inclusion holds or not
-        print("Test {0} {1} {2} [OK]".format(aut1, aut2, res))
+        print("Test: {0} {1} {2} [OK]".format(aut1Name, aut2Name, res))
 
-    def printTestFail(self, aut1, aut2):
+    def printTestFail(self, aut1, aut2, res):
         self.__testsFail += 1
-        print("Test {0} {1} [Fail]".format(aut1, aut2))
+        aut1Name = os.path.basename(aut1)
+        aut2Name = os.path.basename(aut2)
+        print("Test: {0} {1} [Fail]".format(aut1Name, aut2Name))
+        print("Failed test results: ", res)
 
     def printSummary(self):
         print("====================")
@@ -31,7 +37,11 @@ class PrinterLearn(PrinterCheck):
         self.__output.write("{0} {1} {2}".format(aut1Name, aut2Name, res)+os.linesep)
 
     def printTestFail(self, aut1, aut2, res):
-        raise Exception("Learning failed because automata {0} {1} have inconsistent results")
+        aut1Name = os.path.basename(aut1)
+        aut2Name = os.path.basename(aut2)
+        self.__output.write("Failed test: {0} {1}".format(aut1Name, aut2Name)+os.linesep)
+        print("Failed test results: ", res, file=self.__output)
+        raise Exception("Learning failed because automata {0} {1} have inconsistent results. For more information see output file.")
 
     def printSummary(self):
         """
