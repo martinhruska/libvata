@@ -18,6 +18,7 @@ class Params():
         self.__parser.add_argument("-b","--binary", nargs=1, type=str, help='path to VATA cli binary file')
         self.__parser.add_argument("-a","--action", nargs=1, required=True, type=str, help='operation over automata')
         self.__parser.add_argument("-e", nargs='?', type=str, help='params for VATA library')
+        self.__parser.add_argument("-i","--timeout", nargs='?', type=float, help='timeout for operation')
 
 
     def getPathToBinary(self):
@@ -62,3 +63,6 @@ class Params():
     
     def getTestFile(self):
         return self.__args.test
+
+    def getTimeout(self):
+        return self.__args.timeout

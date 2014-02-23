@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/local/bin/python3.3
 
 # VATA tests main file
 # Run this script to run the tests.

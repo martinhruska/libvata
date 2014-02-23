@@ -5,56 +5,42 @@ from os.path import isfile, join
 from printer import PrinterCheck, PrinterLearn
 import functools
 import itertools
+from operations import OperationWrapper
 
 class RunTest:
-    inclOp = "incl"
-    encodingOption = "-r"
     modeCheck = 0
     modeLearn = 1
     modeTest = 2
-    VATAresultIndex = -1
 
     def runTests(self, params):
-        execute = ExecuteVata()
-        execute.setPathToBinary(params.getPathToBinary())
+        executer = ExecuteVata(params.getTimeout())
+        executer.setPathToBinary(params.getPathToBinary())
         mode = self.getMode(params)
         printer = self.getPrinter(mode, params)
+        operationChooser = OperationWrapper()
+        self.opTester = operationChooser.getOperationTester(params.getOperation(), executer)
         if mode == self.modeCheck or mode == self.modeLearn:
-            self.runTestsInDir(execute, printer, params)
+            self.runTestsInDir(printer, params)
         elif mode == self.modeTest:
-            self.runTestsFromFile(execute, printer, params)
+            self.runTestsFromFile(printer, params)
         else:
             raise Exception("Unknow mode for testing: {0}".format(mode))
         printer.printSummary()
 
-    def runTestsFromFile(self, execute, printer, params):
-        aut1Index = 0
-        aut2Index = 1
-        correctResIndex = 2
+    def runTestsFromFile(self, printer, params):
         f = open(params.getTestFile()[0], 'r')
-        automataDir = params.getDir()
         for line in f:
-            line = line.replace(os.linesep,'')
-            testInfo = line.split(' ')
-            results = {}
-            aut1 = automataDir+testInfo[aut1Index]
-            aut2 = automataDir+testInfo[aut2Index]
-            resDir = self.runTestsOverEncs(execute, params, aut1, aut2)
-            results = list(resDir.values())
-            if self.checkTestCorrectness(results) and results[0] == testInfo[correctResIndex]:
-                printer.printTestOK(aut1, aut2, results[0])
-            else:
-                printer.printTestFail(aut1, aut2, resDir)
+            self.opTester.runTestForLine(line, params, printer)
 
-    def runTestsInDir(self, execute, printer, params):
+    def runTestsInDir(self, printer, params):
         files = [x for x in self.getFileList(params.getDir())]
         for aut1 in files:
             for aut2 in files:
-                resDir = self.runTestsOverEncs(execute, params, aut1, aut2)
-                results = list(resDir.values())
-                if self.checkTestCorrectness(results):
+                res = self.opTester.runTest(params, aut1, aut2)
+                resDir = res[1]
+                if res[0] == True:
                     # print automata names and also wheather inclusion holds or not
-                    printer.printTestOK(aut1, aut2, results[0])
+                    printer.printTestOK(aut1, aut2, (list(resDir.values()))[0])
                 else:
                     printer.printTestFail(aut1, aut2, resDir)
 
@@ -71,10 +57,6 @@ class RunTest:
             results[enc] = output[self.VATAresultIndex]
         return results
 
-    def runTestForOp(self, execute, enc, params, aut1, aut2):
-        if params.getOperation() == self.inclOp:
-            return self.runTestIncl(execute, self.createVATAOptions(enc, params, aut1, aut2))
-
     def checkTestCorrectness(self, results):
         """
             checks whether all encodings returns
@@ -85,11 +67,10 @@ class RunTest:
     def runTestIncl(self, execute, options):
         execute.executeVata(options)
 
-    def createVATAOptions(self, enc, params, aut1, aut2):
+    def createVATAOptions(self, enc, params, aut1):
         res = [self.encodingOption]+[enc]+[params.getOperation()]
         res += params.getVATAOptions()
         res.append(aut1)
-        res.append(aut2)
         return res
 
     def getFileList(self, pathToDir):
