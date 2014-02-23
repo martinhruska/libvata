@@ -45,34 +45,6 @@ class RunTest:
                     printer.printTestFail(aut1, aut2, resDir)
 
 
-    def runTestsOverEncs(self, execute, params, aut1, aut2):
-        results = {}
-        for enc in params.getEncs():
-            self.runTestForOp(execute, enc, params, aut1, aut2)
-            if execute.getResCode() != 0:
-                raise Exception("VATA ended with error: \n"+execute.getOutput())
-
-            output = execute.getOutput().split('\n')
-            output.remove('')
-            results[enc] = output[self.VATAresultIndex]
-        return results
-
-    def checkTestCorrectness(self, results):
-        """
-            checks whether all encodings returns
-            the same result for the given automata
-        """
-        return all(x==results[0] for x in results)
-
-    def runTestIncl(self, execute, options):
-        execute.executeVata(options)
-
-    def createVATAOptions(self, enc, params, aut1):
-        res = [self.encodingOption]+[enc]+[params.getOperation()]
-        res += params.getVATAOptions()
-        res.append(aut1)
-        return res
-
     def getFileList(self, pathToDir):
         return map(lambda x: os.path.join(pathToDir,x), [f for f in listdir(pathToDir) if isfile(join(pathToDir,f))])
 
