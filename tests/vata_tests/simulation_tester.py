@@ -10,9 +10,9 @@ class SimulationTester(TesterInterface):
         for aut in files:
             res = self.__runTestsOverEncs(params, aut)
             if self.__checkTestCorrectness(res):
-                printer.printTestAutOneOK(aut, res)
+                printer.printTestOneAutOK(aut, res)
             else:
-                printer.printTestAutOneFail(aut, res)
+                printer.printTestOneAutFail(aut, res)
 
     def __runTestsOverEncs(self, params, aut):
         VATAresultIndex = -1
@@ -27,8 +27,6 @@ class SimulationTester(TesterInterface):
             temp.write(self.executer.getOutput())
             temp.seek(0)
             results.append(temp)
-            #output = self.executer.getOutput().split('\n') # make list of lines
-            #output.remove('') # remove empty line from list of lines
         return results
 
     def __checkTestCorrectness(self, results):

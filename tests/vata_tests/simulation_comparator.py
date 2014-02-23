@@ -15,13 +15,16 @@ class SimulationComparator:
                 state = state+1 # change states
                 continue
             if state == mappingStates: # TODO remake to current output format
-                ml = i.split()
-                dic1[ml[2]] = ml[0]
+                res = i.replace(' ','')
+                resList = [x.split(':') for x in res.split(',') if x != '\n']
+                dic1 = {x[0]: x[1] for x in resList}
+                state = simulationResult
+                continue
             if state == simulationResult:
-                inds = [i for i,x in enumerate(i) if x=="1"]
+                inds = [index for index,x in enumerate(i) if x=="1"]
                 for ind in inds:
                     try:
-                        sim1[dic1[str(line)]].extend([dic1[str(ind)]])
+                        sim1[dic1[str(line)]].append(dic1[str(ind)])
                     except KeyError:
                         sim1[dic1[str(line)]]=[dic1[str(ind)]]
                 sim1[dic1[str(line)]].sort()
@@ -36,13 +39,13 @@ class SimulationComparator:
         try:
             sim1 = self.getSim(firstFile)
 
-            firstFile.close()
-
+            #firstFile.close()
             secondFile = file2
+            secondFile.seek(0) # for case that we comapare same file
             sim2 = self.getSim(secondFile)
             if sim1 == sim2:
                 return True
             else:
                 return False
         except KeyError:
-            sys.stderr.write("Bad format of a simulation output\n")
+            raise Exception("Bad format of a simulation output\n")

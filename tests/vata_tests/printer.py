@@ -17,7 +17,7 @@ class PrinterCheck:
         self.__testsOk += 1
         autName = os.path.basename(aut)
         # print automata names and also wheather inclusion holds or not
-        print("Test: {0} {1} [OK]".format(autName, res))
+        print("Test: {0} [OK]".format(autName, res))
 
     def printTestFail(self, aut1, aut2, res):
         self.__testsFail += 1
@@ -26,10 +26,10 @@ class PrinterCheck:
         print("Test: {0} {1} [Fail]".format(aut1Name, aut2Name))
         print("Failed test results: ", res)
 
-    def printTestOneAutOKFail(self, aut, res):
+    def printTestOneAutFail(self, aut, res):
         self.__testsFail += 1
-        autName = os.path.basename(aut1)
-        print("Test: {0} {1} [Fail]".format(autName))
+        autName = os.path.basename(aut)
+        print("Test: {0} [Fail]".format(autName))
         print("Failed test results: ", res)
 
 

@@ -51,7 +51,16 @@ class InclusionTester(TesterInterface):
             checks whether all encodings returns
             the same result for the given automata
         """
-        return all(x==results[0] for x in results)
+        return all(x==self.__preCheckFile(results[0]) for x in results)
+
+    def __preCheckFile(self, fileToOp):
+        """
+            perform an operation before checking on correctness
+            of a result of simulation is processed.
+            It returns seek to begging of the file
+        """
+        fileToOp.seek(0)
+        return fileToOp
 
     def __prepareResults(self, resDirectory):
         return list(resDirectory.values())
