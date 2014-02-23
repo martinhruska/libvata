@@ -13,12 +13,25 @@ class PrinterCheck:
         # print automata names and also wheather inclusion holds or not
         print("Test: {0} {1} {2} [OK]".format(aut1Name, aut2Name, res))
 
+    def printTestOneAutOK(self, aut, res):
+        self.__testsOk += 1
+        autName = os.path.basename(aut)
+        # print automata names and also wheather inclusion holds or not
+        print("Test: {0} {1} [OK]".format(autName, res))
+
     def printTestFail(self, aut1, aut2, res):
         self.__testsFail += 1
         aut1Name = os.path.basename(aut1)
         aut2Name = os.path.basename(aut2)
         print("Test: {0} {1} [Fail]".format(aut1Name, aut2Name))
         print("Failed test results: ", res)
+
+    def printTestOneAutOKFail(self, aut, res):
+        self.__testsFail += 1
+        autName = os.path.basename(aut1)
+        print("Test: {0} {1} [Fail]".format(autName))
+        print("Failed test results: ", res)
+
 
     def printSummary(self):
         print("====================")

@@ -6,13 +6,15 @@ class InclusionTester(TesterInterface):
     def execute(self, options):
         self.executer.executeVata(options)
 
-    def runTest(self, params, aut1, aut2):
-        resDir = self.__runTestsOverEncs(params, aut1, aut2)
-        if self.__checkTestCorrectness(self.__prepareResults(resDir)):
-            # print automata names and also wheather inclusion holds or not
-            return (True, resDir)
-        else:
-            return (False, resDir)
+    def runTest(self, params, files, printer):
+        for aut1 in files:
+            for aut2 in files:
+                resDir = self.__runTestsOverEncs(params, aut1, aut2)
+                if self.__checkTestCorrectness(self.__prepareResults(resDir)):
+                    # print automata names and also wheather inclusion holds or not
+                    printer.printTestOK(aut1, aut2, (list(resDir.values())))
+                else:
+                    printer.printTestFail(aut1, aut2, resDir)
 
     def runTestForLine(self, line, params, printer):
         correctResIndex = 2
@@ -25,7 +27,7 @@ class InclusionTester(TesterInterface):
         aut2 = params.getDir()+testInfo[aut2Index]
         resDir = self.__runTestsOverEncs(params, aut1, aut2)
         results = list(resDir.values())
-        if self.checkTestCorrectness(self.__prepareResults(resDir)) and results[0] == testInfo[correctResIndex]:
+        if self.__checkTestCorrectness(self.__prepareResults(resDir)) and results[0] == testInfo[correctResIndex]:
             printer.printTestOK(aut1, aut2, results[0])
         else:
             printer.printTestFail(aut1, aut2, resDir)
@@ -37,7 +39,7 @@ class InclusionTester(TesterInterface):
             options = self.__createVATAOptions(enc, params, aut1, aut2)
             self.execute(options)
             if self.executer.getResCode() != 0:
-                raise Exception("VATA ended with error: \n"+execute.getOutput())
+                raise Exception("VATA ended with error: \n"+self.executer.getOutput())
 
             output = self.executer.getOutput().split('\n') # make list of lines
             output.remove('') # remove empty line from list of lines

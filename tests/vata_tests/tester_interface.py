@@ -5,7 +5,7 @@ class TesterInterface:
     def execute(self, options):
         return True
     
-    def runTestsOverEncs(self, execute, params, aut1, aut2):
+    def __runTestsOverEncs(self, execute, params, aut1, aut2):
         return True
 
     def __checkTestCorrectness(self, results):
@@ -19,4 +19,7 @@ class TesterInterface:
         return res
 
     def runTestsForLine(self, line, params):
+        return True
+
+    def runTest(self, params, files, printer):
         return True

@@ -34,15 +34,7 @@ class RunTest:
 
     def runTestsInDir(self, printer, params):
         files = [x for x in self.getFileList(params.getDir())]
-        for aut1 in files:
-            for aut2 in files:
-                res = self.opTester.runTest(params, aut1, aut2)
-                resDir = res[1]
-                if res[0] == True:
-                    # print automata names and also wheather inclusion holds or not
-                    printer.printTestOK(aut1, aut2, (list(resDir.values()))[0])
-                else:
-                    printer.printTestFail(aut1, aut2, resDir)
+        res = self.opTester.runTest(params, files, printer)
 
 
     def getFileList(self, pathToDir):
