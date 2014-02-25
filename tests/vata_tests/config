@@ -1,0 +1,6 @@
+#representation of automata
+represantion = expl,expl_fa
+#operation to be performed
+operation = incl #sim
+#other vata options
+options = -t 

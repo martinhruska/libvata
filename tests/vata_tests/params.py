@@ -1,6 +1,9 @@
 import argparse
 import os
 
+# vata tests modules
+from config_parser import ConfigParser
+
 class Params():
     defaultPath = "../../build/cli/vata"
 
@@ -14,11 +17,21 @@ class Params():
         group.add_argument("-t", "--test", nargs=1, type=str, help="test on given test case defined by given file")
         group.add_argument("-c", "--check", action="store_true", help="perform tests over a given automata")
         self.__parser.add_argument("-d", "--dir", nargs=1, required=True, type=str, help='directory with automata to be tested')
-        self.__parser.add_argument("-r", nargs='?', type=str, required=True, help='encodings to be test')
+        self.__parser.add_argument("-g", "--config", nargs=1, required=True, type=str, help='file with configuration for VATA run')
         self.__parser.add_argument("-b","--binary", nargs=1, type=str, help='path to VATA cli binary file')
-        self.__parser.add_argument("-a","--action", nargs=1, required=True, type=str, help='operation over automata')
-        self.__parser.add_argument("-e", nargs='?', type=str, help='params for VATA library')
         self.__parser.add_argument("-i","--timeout", nargs='?', type=float, help='timeout for operation')
+
+        #self.__parser.add_argument("-r", nargs='?', type=str, required=True, help='encodings to be tested')
+        #self.__parser.add_argument("-a","--action", nargs=1, required=True, type=str, help='operation over automata')
+        #self.__parser.add_argument("-e", nargs='?', type=str, help='params for VATA library')
+
+    def processArguments(self, argv):
+        self.__args = self.__parser.parse_args()
+        
+        if not os.path.isdir(self.__args.dir[0]):
+            raise Exception("{0} is not a directory".format(0))
+        configParser = ConfigParser()
+        self.vataConfig = configParser.parse(self.__args.config[0])
 
 
     def getPathToBinary(self):
@@ -28,32 +41,17 @@ class Params():
             return self.defaultPath
 
     def getEncs(self):
-        return self.__args.r.split(',')
+        return self.vataConfig.getEncs()
 
     def getOperation(self):
-        return self.__args.action[0]
+        return self.vataConfig.getOperation()
 
     def getDir(self):
         return self.__args.dir[0]
 
-    def processArguments(self, argv):
-        self.__args = self.__parser.parse_args()
-        
-        if not os.path.isdir(self.__args.dir[0]):
-            raise Exception("{0} is not directory".format(0))
-        """
-        if len(argv) < 1 and len(argv)%2 == 0:
-            raise Exception("Not enought parameters")
-        i = iter(argv[1:]) # starts from 1 to skip program name
-        self.__params = dict(zip(i,i))
-        """
-
     #TODO ignores the fist character after e option to make possible to enter other options, make this better
     def getVATAOptions(self):
-        if self.__args.e is not None:
-            return self.__args.e[1:].split(',')
-        else:
-            return []
+        return self.vataConfig.getOptions()
 
     def isModeCheck(self):
         return self.__args.check

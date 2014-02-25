@@ -13,8 +13,7 @@ class RunTest:
     modeTest = 2
 
     def runTests(self, params):
-        executer = ExecuteVata(params.getTimeout())
-        executer.setPathToBinary(params.getPathToBinary())
+        executer = ExecuteVata(params.getTimeout(), params.getPathToBinary())
         mode = self.getMode(params)
         printer = self.getPrinter(mode, params)
         operationChooser = OperationWrapper()

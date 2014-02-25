@@ -1,8 +1,14 @@
 from tester_interface import TesterInterface
 
+from inclusion_wrapper import InclusionWrapper
+
 import os
 
 class InclusionTester(TesterInterface):
+
+    def __init__(self, executer):
+        self.inclWrapper = (executer)
+
     def execute(self, options):
         self.executer.executeVata(options)
 
@@ -35,15 +41,20 @@ class InclusionTester(TesterInterface):
     def __runTestsOverEncs(self, params, aut1, aut2):
         VATAresultIndex = -1
         results = {}
-        for enc in params.getEncs():
-            options = self.__createVATAOptions(enc, params, aut1, aut2)
-            self.execute(options)
-            if self.executer.getResCode() != 0:
-                raise Exception("VATA ended with error: \n"+self.executer.getOutput())
+        for repre in params.getEncs():
+            #TODO rewrite this to adapter for inclusion wrapper
+            self.inclWrapper.setRepre(repre)
+            self.inclWrapper.setBigger(aut1)
+            self.inclWrapper.setSmaller(aut1)
+            self.inclWrapper.runOperation()
+            #options = self.__createVATAOptions(repre, params, aut1, aut2)
+            #self.execute(options)
+            if self.incWrapper.getResCode() != 0:
+                raise Exception("VATA ended with error: \n"+self.inclWrapper.getOutput())
 
-            output = self.executer.getOutput().split('\n') # make list of lines
+            output = self.incWrapper.getOutput().split('\n') # make list of lines
             output.remove('') # remove empty line from list of lines
-            results[enc] = output[VATAresultIndex]
+            results[repre] = output[VATAresultIndex]
         return results
 
     def __checkTestCorrectness(self, results):

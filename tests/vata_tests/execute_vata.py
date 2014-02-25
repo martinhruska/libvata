@@ -1,12 +1,13 @@
 import subprocess
 
 class ExecuteVata:
-    def __init__(self,timeout):
+    def __init__(self, timeout, pathToBinary):
         self.__vata = None
         self.__output = ""
         self.__resCode = 0
         self.__pathToBinary = None
         self.__timeout = timeout
+        self.__pathToBinary = pathToBinary
 
     def executeVata(self, options):
         if self.__pathToBinary is None:
