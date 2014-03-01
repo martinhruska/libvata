@@ -18,8 +18,12 @@ class RunTest:
         printer = self.getPrinter(mode, params)
         operationChooser = OperationWrapper()
         self.opTester = operationChooser.getOperationTester(params.getOperation(), executer)
-        if mode == self.modeCheck or mode == self.modeLearn:
+        if len(params.getRepres()) == 0:
+            raise Exception("No representation of automaton given")
+        if mode == self.modeCheck:
             self.runTestsInDir(printer, params)
+        elif mode == self.modeLearn:
+            self.runTestsInDirLearn(printer, params)
         elif mode == self.modeTest:
             self.runTestsFromFile(printer, params)
         else:
@@ -34,6 +38,11 @@ class RunTest:
     def runTestsInDir(self, printer, params):
         files = [x for x in self.getFileList(params.getDir())]
         res = self.opTester.runTest(params, files, printer)
+        functools.reduce(lambda x: x.close(), files)
+
+    def runTestsInDirLearn(self, printer, params):
+        files = [x for x in self.getFileList(params.getDir())]
+        res = self.opTester.runTestLearn(params, files, printer)
 
 
     def getFileList(self, pathToDir):

@@ -2,7 +2,7 @@
 
 class VATAConfiguration:
     def __init__(self):
-       self.encs = []
+       self.repres = []
        self.operation = ""
        self.options = []
 
@@ -12,11 +12,11 @@ class VATAConfiguration:
     def setOperation(self, operation):
         self.operation = operation
 
-    def getEncs(self):
-        return self.encs
+    def getRepres(self):
+        return self.repres
     
-    def setEncs(self, encs):
-        self.encs = encs
+    def setRepres(self, repres):
+        self.repres = repres
 
     def getOptions(self):
         return self.options

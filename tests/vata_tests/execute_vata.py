@@ -12,9 +12,9 @@ class ExecuteVata:
     def executeVata(self, options):
         if self.__pathToBinary is None:
             raise Exception("Path to VATA binary is no specified")
-        self.__vata = subprocess.Popen([self.__pathToBinary]+options,stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        self.__resCode = self.__vata.wait(timeout=self.__timeout)
-        self.__output = self.__vata.communicate()
+        self.__vata = subprocess.Popen([self.__pathToBinary]+options, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.__output = self.__vata.communicate(timeout=self.__timeout)
+        self.__resCode = self.__vata.returncode
 
     def setPathToBinary(self, path):
         self.__pathToBinary = path

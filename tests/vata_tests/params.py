@@ -31,7 +31,10 @@ class Params():
         if not os.path.isdir(self.__args.dir[0]):
             raise Exception("{0} is not a directory".format(0))
         configParser = ConfigParser()
-        self.vataConfig = configParser.parse(self.__args.config[0])
+        vataConfig = configParser.parse(self.__args.config[0])
+        self.repres = vataConfig.getRepres()
+        self.operation = vataConfig.getOperation()
+        self.options = vataConfig.getOptions()
 
 
     def getPathToBinary(self):
@@ -40,18 +43,18 @@ class Params():
         else:
             return self.defaultPath
 
-    def getEncs(self):
-        return self.vataConfig.getEncs()
+    def getRepres(self):
+        return self.repres
 
     def getOperation(self):
-        return self.vataConfig.getOperation()
+        return self.operation
 
     def getDir(self):
         return self.__args.dir[0]
 
     #TODO ignores the fist character after e option to make possible to enter other options, make this better
     def getVATAOptions(self):
-        return self.vataConfig.getOptions()
+        return self.options
 
     def isModeCheck(self):
         return self.__args.check

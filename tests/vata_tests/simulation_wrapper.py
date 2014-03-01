@@ -1,29 +1,24 @@
-# wrapping cli inclusion
+# wrapping cli simulation
 
 from operation_wrapper import OperationWrapper
 from execute_vata import ExecuteVata
 
-class InclusionWrapper(OperationWrapper):
-    vataOperationName = "incl"
+class SimulationWrapper(OperationWrapper):
+    vataOperationName = "sim"
 
     def __init__(self, executer):
         self.executer = executer
 
-    def setSmaller(self, smaller):
-        self.smaller = smaller
-
-    def setBigger(self, bigger):
-        self.bigger = bigger
+    def setAutomaton(self, automaton):
+        self.automaton = automaton
 
     def runOperation(self):
         self.executer.executeVata(self.getRunOptions())
 
     def getRunOptions(self):
         res = [self.vataOperationName]
-        #res.append(super(InclusionTester, self).getRunOptions())
         res += OperationWrapper.getRunOptions(self)
-        res.append(self.smaller)
-        res.append(self.bigger)
+        res.append(self.automaton)
         return res
 
     def getResCode(self):

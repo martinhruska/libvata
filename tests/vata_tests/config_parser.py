@@ -28,7 +28,7 @@ class ConfigParser:
         option = parsedList[0]
 
         if option == "representation":
-            vataConfig.setEncs(parsedList[valueIndex].split(','))
+            vataConfig.setRepres(parsedList[valueIndex].split(','))
         elif option == "operation":
             vataConfig.setOperation(parsedList[valueIndex])
         elif option == "options":

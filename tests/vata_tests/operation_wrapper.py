@@ -1,7 +1,7 @@
 # general wrapper of operation implemented in VATA library
 # serves also like an interface
 
-class OperationWrapper:
+class OperationWrapper(object):
 
     def __init__(self):
         self.printTime = False
@@ -28,7 +28,7 @@ class OperationWrapper:
 
     def getRunOptions(self):
         representationOption = "-r"
-        res = [representationOption]+[self.getRepre]
+        res = [representationOption]+[self.getRepre()]
         return res
 
 # INTERFACE methods. To be implemented in concrete operation
