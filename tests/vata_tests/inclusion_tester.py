@@ -13,6 +13,7 @@ class InclusionTester(TesterInterface):
         self.runTest(params, files, printer)
 
     def runTest(self, params, files, printer):
+        self.setInclParams(params)
         for aut1 in files:
             for aut2 in files:
                 resDir = self.__runTestsOverRepres(params.getRepres(), aut1, aut2)
@@ -27,6 +28,7 @@ class InclusionTester(TesterInterface):
         aut1Index = 0
         aut2Index = 1
 
+        self.setInclParams(params)
         line = line.replace(os.linesep,'')
         testInfo = line.split(' ')
         aut1 = os.path.join(params.getDir(), testInfo[aut1Index])
@@ -43,8 +45,8 @@ class InclusionTester(TesterInterface):
         results = {}
         for repre in repres:
             self.inclWrapper.setRepre(repre)
-            self.inclWrapper.setBigger(aut1)
             self.inclWrapper.setSmaller(aut1)
+            self.inclWrapper.setBigger(aut2)
             self.inclWrapper.runOperation()
             if self.inclWrapper.getResCode() != 0:
                 raise Exception("VATA ended with error: \n"+self.inclWrapper.getOutput())
@@ -53,6 +55,13 @@ class InclusionTester(TesterInterface):
             output.remove('') # remove empty line from list of lines
             results[repre] = output[VATAresultIndex]
         return results
+
+    def setInclParams(self, params):
+           self.inclWrapper.setUseSim(params.getSimulation())
+           self.inclWrapper.setAlgorithm(params.getAlgorithm())
+           self.inclWrapper.setDirection(params.getDirection())
+           self.inclWrapper.setSearchOrder(params.getSearchOrder())
+           self.inclWrapper.setPrintTime(params.getTime())
 
     def __checkTestCorrectness(self, results):
         """

@@ -33,5 +33,17 @@ class ConfigParser:
             vataConfig.setOperation(parsedList[valueIndex])
         elif option == "options":
             vataConfig.setOptions(parsedList[valueIndex].split(','))
+        elif option == "time":
+            if parsedList[valueIndex] == "true":
+                vataConfig.setTime(True)
+        elif option == "algorithm":
+            vataConfig.setAlgorithm(parsedList[valueIndex])
+        elif option == "direction":
+            vataConfig.setDirection(parsedList[valueIndex])
+        elif option == "simulation":
+            if parsedList[valueIndex] == "true":
+                vataConfig.setSimulation(parsedList[valueIndex])
+        elif option == "searchOrder":
+            vataConfig.setSearchOrder(parsedList[valueIndex])
 
         return vataConfig

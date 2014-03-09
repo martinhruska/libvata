@@ -5,6 +5,9 @@ from execute_vata import ExecuteVata
 
 class SimulationWrapper(OperationWrapper):
     vataOperationName = "sim"
+    otherOptions = "-o"
+    directionOpt = "dir"
+    direction = "up"
 
     def __init__(self, executer):
         self.executer = executer
@@ -18,7 +21,12 @@ class SimulationWrapper(OperationWrapper):
     def getRunOptions(self):
         res = [self.vataOperationName]
         res += OperationWrapper.getRunOptions(self)
+        res.append(self.otherOptions)
+        otherOptions = ""
+        otherOptions += self.directionOpt + '=' + self.direction
+        res.append(otherOptions)
         res.append(self.automaton)
+        print(res)
         return res
 
     def getResCode(self):
@@ -26,3 +34,6 @@ class SimulationWrapper(OperationWrapper):
 
     def getOutput(self):
         return self.executer.getOutput()
+
+    def setDirection(self, val):
+        self.direction = val

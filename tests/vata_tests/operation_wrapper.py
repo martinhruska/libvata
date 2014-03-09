@@ -6,8 +6,11 @@ class OperationWrapper(object):
     def __init__(self):
         self.printTime = False
 
-    def setPrintTime(self):
+    def printTime(self):
         self.printTime = True
+
+    def setPrintTime(self, val):
+        self.printTime = val
 
     def isPrintTime(self):
         return self.printTime

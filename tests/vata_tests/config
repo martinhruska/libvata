@@ -2,5 +2,13 @@
 representation = expl
 #operation to be performed
 operation = sim #incl
+#show time
+time = true #false
+# choose algorithm for chosen operation
+algorithm = antichains
+# direction: up or down
+direction = up
+# search order = breadth, depth
+searchOrder = breadth
 #other vata options
-#options = -t 
+options = -t 
