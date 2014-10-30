@@ -4,9 +4,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_COLOR_MAKEFILE ON)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(REQUIRED_GCC_VERSION 4.8.0)
+set(REQUIRED_GCC_VERSION 4.6.0)
 
-set(GCC_ALTERNATIVES g++ g++-4.8)
+set(GCC_ALTERNATIVES g++ g++-4.6)
 
 # Uncomment to avoid dynamic linking of libraries
 #set(MAKE_STATIC_VATA ON)
