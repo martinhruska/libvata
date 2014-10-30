@@ -54,15 +54,12 @@ project(libvata)
 include(CTest)
 
 # Necessary packages
-find_package(FLEX REQUIRED)
-find_package(BISON 3.0.0 REQUIRED)
 find_package(Doxygen REQUIRED)
 
 set(Boost_USE_MULTITHREADED OFF)
 find_package(Boost 1.54.0 COMPONENTS
   filesystem
   system
-  unit_test_framework
   REQUIRED)
 
 #if (DOXYGEN_FOUND)
@@ -78,6 +75,3 @@ find_package(Boost 1.54.0 COMPONENTS
 
 # Process subdirectories
 add_subdirectory(src)
-add_subdirectory(cli)
-add_subdirectory(unit_tests)
-add_subdirectory(tests)

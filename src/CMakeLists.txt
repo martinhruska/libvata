@@ -39,10 +39,6 @@ endforeach(param)
 
 include_directories(../include)
 
-flex_target(timbuk_scanner timbuk.l ${CMAKE_CURRENT_BINARY_DIR}/timbuk.l.cc)
-bison_target(timbuk_parser timbuk.y ${CMAKE_CURRENT_BINARY_DIR}/timbuk.y.cc)
-add_flex_bison_dependency(timbuk_scanner timbuk_parser)
-
 add_library(libvata STATIC
 	aut_base.cc
 	bdd_bu_tree_aut.cc
@@ -92,13 +88,9 @@ add_library(libvata STATIC
   fmemopen.c
 	symbolic.cc
   memstream.c
-  timbuk_parser.cc
-  timbuk_serializer.cc
   util.cc
   sym_var_asgn.cc
 	symbolic_tree_aut_base_core.cc
-  ${FLEX_timbuk_scanner_OUTPUTS}
-  ${BISON_timbuk_parser_OUTPUTS}
 )
 set_target_properties(libvata PROPERTIES
   OUTPUT_NAME vata
