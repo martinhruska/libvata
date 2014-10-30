@@ -6,6 +6,7 @@ set(CMAKE_COLOR_MAKEFILE ON)
 project(vata)
 
 set(flex_bison_compiler_flags_list
+  -O3
   -std=c++11
   -pedantic-errors
   -Wextra
