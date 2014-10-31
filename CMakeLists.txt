@@ -54,7 +54,7 @@ project(libvata)
 include(CTest)
 
 set(Boost_USE_MULTITHREADED OFF)
-find_package(Boost 1.54.0 COMPONENTS
+find_package(Boost 1.40.0 COMPONENTS
   filesystem
   system
   REQUIRED)
