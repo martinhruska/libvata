@@ -53,9 +53,6 @@ project(libvata)
 # Include CTest so that sophisticated testing can be done now
 include(CTest)
 
-# Necessary packages
-find_package(Doxygen REQUIRED)
-
 set(Boost_USE_MULTITHREADED OFF)
 find_package(Boost 1.54.0 COMPONENTS
   filesystem
