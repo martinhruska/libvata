@@ -53,12 +53,6 @@ project(libvata)
 # Include CTest so that sophisticated testing can be done now
 include(CTest)
 
-set(Boost_USE_MULTITHREADED OFF)
-find_package(Boost 1.40.0 COMPONENTS
-  filesystem
-  system
-  REQUIRED)
-
 #if (DOXYGEN_FOUND)
 #  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
 #    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
