@@ -42,6 +42,11 @@ namespace VATA
 		 */
 		size_t numStates_ = static_cast<size_t>(-1);
 
+		/**
+		 * @brief Use of algorithm created in GAL lecture
+		 */
+		bool bddAlg_ = false;
+
 	public:   // methods
 
 		void SetRelation(e_sim_relation rel)
@@ -62,6 +67,16 @@ namespace VATA
 		size_t GetNumStates() const
 		{
 			return numStates_;
+		}
+
+		void SetBddAlg(bool alg)
+		{
+			bddAlg_ = alg;
+		}
+
+		bool GetBddAlg() const
+		{
+			return bddAlg_;
 		}
 
 		std::string toString() const
@@ -94,6 +109,9 @@ namespace VATA
 					assert(false);     // fail gracefully
 				}
 			}
+
+			result +=
+				". Use GAL alg: " + (bddAlg_ ? std::string("True") : std::string("False"));
 
 			return result;
 		}

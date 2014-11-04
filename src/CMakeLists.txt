@@ -76,6 +76,7 @@ add_library(libvata STATIC
   bdd_td_tree_aut.cc
 	bdd_td_tree_aut_core.cc
   bdd_td_tree_aut_sim.cc
+  bdd_td_tree_aut_sim_expl.cc
   bdd_td_tree_aut_incl.cc
   bdd_td_tree_aut_isect.cc
   bdd_td_tree_aut_union.cc

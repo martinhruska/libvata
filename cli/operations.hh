@@ -238,6 +238,11 @@ VATA::AutBase::StateDiscontBinaryRelation ComputeSimulation(
 			Convert::ToString(options));
 	}
 
+	if (options["bdd"] == "spec")
+	{
+		sp.SetBddAlg(true);
+	}
+
 	return aut.ComputeSimulation(sp);
 }
 

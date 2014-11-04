@@ -70,6 +70,7 @@ const char VATA_USAGE_COMMANDS[] =
 	"        tree automata:\n"
 	"          'dir=down' : downward simulation (default)\n"
 	"          'dir=up'   : upward simulation\n"
+	"          'bdd=spec' : GAL algorithm for BDD simualtion\n"
 	"        finite automata:\n"
 	"          'dir=fwd'  : forward simulation (default)\n"
 	"          'dir=bwd'  : backward simulation\n"
