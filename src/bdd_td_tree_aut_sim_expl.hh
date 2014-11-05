@@ -7,7 +7,7 @@ namespace VATA
 {
 	class BDDTopDownSimExpl;
 
-	class BDDTopDownTreeAut;
+	class BDDTDTreeAutCore;
 }
 		
 class VATA::BDDTopDownSimExpl
@@ -17,7 +17,7 @@ private: // data types
 
 public:
 	static StateDiscontBinaryRelation ComputeSimulation(
-			const BDDTopDownTreeAut&              aut);
+			const BDDTDTreeAutCore&              aut);
 };
 
 #endif
