@@ -13,6 +13,11 @@ class VATA::BDDTopDownSimExpl
 {
 private: // data types
 	using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
+	using StateType                  = BDDTDTreeAutCore::StateType;
+	using StateTuple                 = BDDTDTreeAutCore::StateTuple;
+	using TransMTBDD                 = BDDTDTreeAutCore::TransMTBDD;
+	using BDD                        = BDDTDTreeAutCore::BDD;
+	using StateTupleSet              = BDDTDTreeAutCore::StateTupleSet;
 
 public:
 	static StateDiscontBinaryRelation ComputeSimulation(

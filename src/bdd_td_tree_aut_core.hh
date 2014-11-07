@@ -50,6 +50,7 @@ public:   // data types
 	using DownInclStateTupleVector  = std::vector<StateTuple>;
 
 	using TransMTBDD   = MTBDDPkg::OndriksMTBDD<StateTupleSet>;
+	using BDD          = MTBDDPkg::OndriksMTBDD<bool>;
 
 private:  // data types
 
@@ -60,7 +61,6 @@ private:  // data types
 	using TransTablePtr    = std::shared_ptr<TransTable>;
 	using StateMap         = TransTable::StateMap;
 
-	using BDD          = MTBDDPkg::OndriksMTBDD<bool>;
 
 
 	GCC_DIAG_OFF(effc++)    // suppress missing virtual destructor warning
