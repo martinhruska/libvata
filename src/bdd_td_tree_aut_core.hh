@@ -27,6 +27,7 @@
 #include "mtbdd/void_apply2func.hh"
 
 #include "util/bdd_td_trans_table.hh"
+#include "util/cond_col.hh"
 #include "symbolic_tree_aut_base_core.hh"
 #include "bdd_bu_tree_aut_core.hh"
 
@@ -158,47 +159,6 @@ private:  // methods
 		StateBackTranslFunc           stateBackTransl,
 		const AlphabetType&           alphabet) const
 	{
-		GCC_DIAG_OFF(effc++)
-		class CondColApplyFunctor : public VATA::MTBDDPkg::VoidApply2Functor<
-			CondColApplyFunctor,
-			StateTupleSet,
-			bool>
-		{
-		GCC_DIAG_ON(effc++)
-
-		public:   // data types
-
-			typedef std::list<StateTuple> AccumulatorType;
-
-		private:  // data members
-
-			AccumulatorType accumulator_;
-
-		public:
-
-			CondColApplyFunctor() :
-				accumulator_()
-			{ }
-
-			const AccumulatorType& GetAccumulator() const
-			{
-				return accumulator_;
-			}
-
-			void Clear()
-			{
-				accumulator_.clear();
-			}
-
-			void ApplyOperation(const StateTupleSet& lhs, const bool& rhs)
-			{
-				if (rhs)
-				{
-					accumulator_.insert(accumulator_.end(), lhs.begin(), lhs.end());
-				}
-			}
-		};
-
 		AutDescription desc;
 
 		// copy final states
@@ -208,7 +168,7 @@ private:  // methods
 			desc.states.insert(stateBackTransl(fst));
 		}
 
-		CondColApplyFunctor collector;
+		CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
 
 		// copy states, transitions and symbols
 		for (auto stateBddPair : this->GetStates())
