@@ -12,7 +12,7 @@
 // VATA headers
 #include <vata/bdd_td_tree_aut.hh>
 
-#include "bdd_td_tree_aut_sim_expl.hh"
+#include "gal/bdd_td_tree_aut_sim_expl.hh"
 #include "bdd_td_tree_aut_core.hh"
 #include "loadable_aut.hh"
 

@@ -2,7 +2,7 @@
 #define _VATA_BDD_TD_SIM_EXPL_HH_
 
 #include <vata/aut_base.hh>
-#include "bdd_td_tree_aut_core.hh"
+#include "../bdd_td_tree_aut_core.hh"
 
 namespace VATA
 {
