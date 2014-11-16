@@ -19,6 +19,7 @@ set(basic_cxx_compiler_add_flags_list
   -Wctor-dtor-privacy
   -Weffc++
   -Woverloaded-virtual
+  -fdiagnostics-color=always
 )
 
 # Additional flags for VATA C++ files
@@ -44,6 +45,7 @@ endforeach(param)
 
 include_directories(../../include)
 
-add_library(bddTDSimCore bdd_td_tree_aut_sim_expl.cc)
+add_library(bddTDSimCore
+	bdd_td_tree_aut_sim_expl.cc)
 
 set_source_files_properties(bdd_td_tree_aut_sim_expl.cc PROPERTIES COMPILE_FLAGS ${vata_cxx_compiler_flags})
