@@ -9,6 +9,7 @@
 
 namespace VATA
 {
+	class ExplicitTreeAutCore;
 	class BDDTopDownSimExpl;
 	class StateToUsed;
 }
@@ -30,8 +31,9 @@ private: // data types
 	friend class SymbolTranslator;
 
 public:
-	static StateDiscontBinaryRelation ComputeSimulation(
-			const BDDTDTreeAutCore&              aut);
+	static void Translate(
+			const BDDTDTreeAutCore&              aut,
+			ExplicitTreeAutCore&                 explAut);
 
 private:
 	static void loadUsedSymbols(

@@ -2,7 +2,7 @@
 
 #include "../util/cond_col.hh"
 #include "data_types.hh"
-#include <vata/explicit_tree_aut.hh>
+#include "../explicit_tree_aut_core.hh"
 
 #include <iostream>
 #include <string>
@@ -30,7 +30,7 @@ namespace {
 	void translate(
 			const VATA::StateToUsed&   used,
 			VATA::SymbolTranslator&    translator,
-			VATA::ExplicitTreeAut&     aut)
+			VATA::ExplicitTreeAutCore& aut)
 	{
 		for (const auto& item : used)
 		{
@@ -39,7 +39,7 @@ namespace {
 			const auto& tupleToSyms = item.second;
 			
 			for (const auto& a : tupleToSyms)
-			{
+			{ // translate all common symbols for more transitions
 				for (const auto& b : tupleToSyms)
 				{
 					if (a.first == b.first)
@@ -57,12 +57,12 @@ namespace {
 
 					const size_t translSym = translator.insertItem(intersect);
 					aut.AddTransition(*a.first, translSym, parent);
-					addedTuples.insert(a.first);
+					addedTuples.insert(a.first); // mark that it was translated
 				}
 			}
 
 			for (const auto& i : tupleToSyms)
-			{
+			{ // add to the result automata symbols that has not been translated yet.
 				const StateTuple *tuple = i.first;
 				if (addedTuples.count(tuple))
 				{
@@ -113,16 +113,14 @@ void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 }
 
 
-VATA::BDDTopDownSimExpl::StateDiscontBinaryRelation VATA::BDDTopDownSimExpl::ComputeSimulation(
-		const BDDTDTreeAutCore&              aut)
+void VATA::BDDTopDownSimExpl::Translate(
+		const BDDTDTreeAutCore&              aut,
+		ExplicitTreeAutCore&                 explAut)
 {
 
 	StateToUsed stateToUsed;
 	loadUsedSymbols(aut, stateToUsed);
 	
 	SymbolTranslator translator;
-	ExplicitTreeAut explAut;
 	translate<StateTuple, SymbolType, StateType>(stateToUsed, translator, explAut);
-	
-	return StateDiscontBinaryRelation();
 }

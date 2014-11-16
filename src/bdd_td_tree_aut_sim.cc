@@ -14,6 +14,7 @@
 
 #include "gal/bdd_td_tree_aut_sim_expl.hh"
 #include "bdd_td_tree_aut_core.hh"
+#include "explicit_tree_aut_core.hh"
 #include "loadable_aut.hh"
 
 using VATA::BDDTopDownTreeAut;
@@ -21,12 +22,24 @@ using VATA::Util::Convert;
 
 typedef VATA::AutBase::StateDiscontBinaryRelation StateDiscontBinaryRelation;
 
+namespace {
+
+StateDiscontBinaryRelation computeSimulationExpl(
+		const VATA::BDDTDTreeAutCore&  core)
+{
+		VATA::ExplicitTreeAutCore aut;
+		VATA::BDDTopDownSimExpl::Translate(core, aut);
+		return StateDiscontBinaryRelation();
+}
+
+}
+
 StateDiscontBinaryRelation BDDTopDownTreeAut::ComputeSimulation(
 	const SimParam&                params) const
 {
 	if (params.GetBddAlg())
 	{
-		return BDDTopDownSimExpl::ComputeSimulation(*(this->core_));
+		computeSimulationExpl(*(this->core_));
 	}
 
 	throw NotImplementedException(__func__);
