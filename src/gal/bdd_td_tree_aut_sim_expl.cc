@@ -83,9 +83,9 @@ namespace {
 
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 		const BDDTDTreeAutCore&               aut,
-		VATA::StateToUsed&                    stateToUsed)
+		VATA::StateToUsed&                    stateToUsed,
+		CondColApplyFunctor<StateTupleSet, StateType, StateTuple>& collector)
 {
-	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
 	for (auto stateBddPair : aut.GetStates())
 	{	// for all states
 		const StateType& state = stateBddPair.first;
@@ -101,7 +101,7 @@ void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 
 			BDD symbolBdd(strSymbol.second, true, false);
 
-			collector.Clear();
+			//collector.Clear();
 			collector(transMtbdd, symbolBdd);
 
 			for (const StateTuple& tuple : collector.GetAccumulator())
@@ -119,8 +119,11 @@ void VATA::BDDTopDownSimExpl::Translate(
 {
 
 	StateToUsed stateToUsed;
-	loadUsedSymbols(aut, stateToUsed);
+	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
+	loadUsedSymbols(aut, stateToUsed, collector);
 	
 	SymbolTranslator translator;
 	translate<StateTuple, SymbolType, StateType>(stateToUsed, translator, explAut);
+
+	for (auto trans : explAut) std::cerr << explAut.ToString(trans) << std::endl;
 }

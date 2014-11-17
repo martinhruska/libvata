@@ -13,6 +13,9 @@ namespace VATA
 	class BDDTopDownSimExpl;
 	class StateToUsed;
 }
+	
+template<class StateTupleSet, class StateType, class StateTuple>
+class CondColApplyFunctor;	
 		
 class VATA::BDDTopDownSimExpl
 {
@@ -38,7 +41,8 @@ public:
 private:
 	static void loadUsedSymbols(
 			const BDDTDTreeAutCore&              aut,
-			StateToUsed&                         stateToUsed);
+			VATA::StateToUsed&                   stateToUsed,
+			CondColApplyFunctor<StateTupleSet, StateType, StateTuple>& collector);
 };
 
 #endif
