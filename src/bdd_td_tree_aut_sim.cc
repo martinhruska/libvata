@@ -39,7 +39,7 @@ StateDiscontBinaryRelation BDDTopDownTreeAut::ComputeSimulation(
 {
 	if (params.GetBddAlg())
 	{
-		computeSimulationExpl(*(this->core_));
+		return computeSimulationExpl(*(this->core_));
 	}
 
 	throw NotImplementedException(__func__);
