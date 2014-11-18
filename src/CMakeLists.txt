@@ -10,6 +10,7 @@ set(basic_c_compiler_flags_list
   -pedantic-errors
   -Wextra
   -Wall
+  -g
   -Wfloat-equal
   -fdiagnostics-show-option
   -march=native
