@@ -23,13 +23,15 @@ private: // data types
 	using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
 	using StateType                  = BDDTDTreeAutCore::StateType;
 	using StateTuple                 = BDDTDTreeAutCore::StateTuple;
+	using StateTupleInd              = size_t;
 	using TransMTBDD                 = BDDTDTreeAutCore::TransMTBDD;
 	using BDD                        = BDDTDTreeAutCore::BDD;
 	using StateTupleSet              = BDDTDTreeAutCore::StateTupleSet;
+	using TupleStore                 = std::vector<StateTuple>;
 
 	using SymbolType                 = std::string;
 	
-	using UsedSymbols = std::unordered_map<const StateTuple*, std::unordered_set<SymbolType>>;
+	using UsedSymbols = std::unordered_map<StateTupleInd, std::unordered_set<SymbolType>>;
 	friend class StateToUsed;
 	friend class SymbolTranslator;
 
@@ -40,9 +42,9 @@ public:
 
 private:
 	static void loadUsedSymbols(
-			const BDDTDTreeAutCore&              aut,
-			VATA::StateToUsed&                   stateToUsed,
-			CondColApplyFunctor<StateTupleSet, StateType, StateTuple>& collector);
+			const BDDTDTreeAutCore&                                     aut,
+			VATA::StateToUsed&                                          stateToUsed,
+			TupleStore&                                                 tupleStore);
 };
 
 #endif

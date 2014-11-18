@@ -3,10 +3,11 @@
 
 #include "bdd_td_tree_aut_sim_expl.hh"
 
+#include <ostream>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <string>
 
 namespace VATA {
 	class SymbolTranslator;
@@ -19,26 +20,11 @@ class VATA::SymbolTranslator :
 private:
 	size_t cnt_;
 	std::unordered_map<size_t, std::unordered_set<std::string>> items_;
-	std::unordered_map<size_t, std::string> translator_;
 
-
-private:
-	static const std::unordered_set<std::string>& syms(
-			const std::pair<size_t, std::unordered_set<std::string>>& item)
-	{
-		return item.second;
-	}
-	
-	
-	static size_t index(
-			const std::pair<size_t, std::unordered_set<std::string>>& item)
-	{
-		return item.first;
-	}
 
 public:
 	SymbolTranslator() :
-		cnt_(0), items_(), translator_()
+		cnt_(0), items_()
 	{}
 
 
@@ -47,7 +33,7 @@ public:
 		for (const auto& translated : items_)
 		{
 			bool eq = true;
-			for (const auto& sym : syms(translated))
+			for (const auto& sym : translated.second)
 			{
 				if (!item.count(sym))
 				{
@@ -58,15 +44,31 @@ public:
 
 			if (eq)
 			{
-				return index(translated);
+				return translated.first;
 			}
 		}
 
 		size_t ind = cnt_;
-		items_[ind] = std::unordered_set<std::string>(item);
+		items_.insert(std::make_pair(ind, std::unordered_set<std::string>(item)));
 		cnt_++;
 
 		return ind;
+	}
+
+
+	friend std::ostream& operator<<(std::ostream& os, const SymbolTranslator& trans)
+	{
+		for (const auto& item : trans.items_)
+		{
+			std::cerr << "{";
+			for (const auto& sym : item.second)
+			{
+				std::cerr << sym << ", ";
+			}
+			std::cerr << "}:" << item.first << ", ";
+		}
+
+		return os;
 	}
 };
 
@@ -77,25 +79,25 @@ class VATA::StateToUsed : public std::unordered_map<
 {
 
 private:
-	using StateType   = BDDTopDownSimExpl::StateType;
-	using StateTuple  = BDDTopDownSimExpl::StateTuple;
-	using SymbolType  = BDDTopDownSimExpl::SymbolType;
-	using UsedSymbols = BDDTopDownSimExpl::UsedSymbols;
+	using StateType      = BDDTopDownSimExpl::StateType;
+	using StateTupleInd  = size_t;
+	using SymbolType     = BDDTopDownSimExpl::SymbolType;
+	using UsedSymbols    = BDDTopDownSimExpl::UsedSymbols;
 
 
 public:
-	bool hasTuple(StateType state, const StateTuple* tuple)
+	bool hasTuple(StateType state, const StateTupleInd tupleInd)
 	{
-		return (*this).count(state) && (*this)[state].count(tuple);
+		return (*this).count(state) && (*this)[state].count(tupleInd);
 	}
 
-	void insertSymbol(StateType state, const StateTuple* tuple, SymbolType symbol)
+	void insertSymbol(StateType state, const StateTupleInd tupleInd, SymbolType symbol)
 	{
-		if (!this->hasTuple(state, tuple))
+		if (!this->hasTuple(state, tupleInd))
 		{
-			(*this)[state][tuple] = std::unordered_set<std::string>();
+			(*this)[state][tupleInd] = std::unordered_set<std::string>();
 		}
-		(*this)[state][tuple].insert(symbol);
+		(*this)[state][tupleInd].insert(symbol);
 	}
 
 	void insertState(StateType state)

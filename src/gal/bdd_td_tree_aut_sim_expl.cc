@@ -26,66 +26,112 @@ namespace {
 	}
 
 
-	template <class StateTuple, class SymbolType, class StateType>
-	void translate(
-			const VATA::StateToUsed&   used,
+	template<class SymbolType, class StateType, class TupleToSyms, class TupleStore, class ExploredTuples>
+	void translateIntersections(
+			const StateType            parent,
+			const TupleToSyms&         tupleToSyms,
+			const TupleStore&          tupleStore, 
+			ExploredTuples&            exploredTuples,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut)
 	{
-		for (const auto& item : used)
-		{
-			std::unordered_set<const StateTuple*> addedTuples;
-			const StateType& parent = item.first;
-			const auto& tupleToSyms = item.second;
-			
-			for (const auto& a : tupleToSyms)
-			{ // translate all common symbols for more transitions
-				for (const auto& b : tupleToSyms)
-				{
-					if (a.first == b.first)
-					{ // pointer to state tuples are same -> continue
-						continue;
-					}
-
-					auto isect = [](
-							const SymbolType& a,
-							const std::unordered_set<SymbolType>& b) -> bool {
-						return b.count(a);
-					};
-					std::unordered_set<SymbolType> intersect;
-					setOp(a.second, b.second, intersect, isect);
-
-					const size_t translSym = translator.insertItem(intersect);
-					aut.AddTransition(*a.first, translSym, parent);
-					addedTuples.insert(a.first); // mark that it was translated
+		for (const auto& a : tupleToSyms)
+		{ // translate all common symbols for more transitions
+			for (const auto& b : tupleToSyms)
+			{
+				if (a.first == b.first)
+				{ // pointer to state tuples are same -> continue
+					continue;
 				}
-			}
 
-			for (const auto& i : tupleToSyms)
-			{ // add to the result automata symbols that has not been translated yet.
-				const StateTuple *tuple = i.first;
-				if (addedTuples.count(tuple))
+				auto isect = [](
+						const SymbolType& lhsItem,
+						const std::unordered_set<SymbolType>& rhs) -> bool {
+					return rhs.count(lhsItem);
+				};
+				std::unordered_set<SymbolType> intersect;
+				setOp(a.second, b.second, intersect, isect);
+				if (intersect.empty())
 				{
 					continue;
 				}
 
-				for (const auto& sym : i.second)
-				{
-					const size_t translSym =
-						translator.insertItem(std::unordered_set<std::string>({sym}));
-					aut.AddTransition(*tuple, translSym, parent);
-				}
+				const size_t translSym = translator.insertItem(intersect);
+				aut.AddTransition(tupleStore.at(a.first), translSym, parent);
+				exploredTuples.insert(a.first); // mark that it was translated
 			}
+		}
+	}
+
+
+	template <class TupleToSyms, class StateType, class TupleStore, class ExploredTuples>
+	void translateSingleSymbols(
+			const StateType            parent,
+			const TupleToSyms&         tupleToSyms,
+			const TupleStore&          tupleStore, 
+			ExploredTuples&            exploredTuples,
+			VATA::SymbolTranslator&    translator,
+			VATA::ExplicitTreeAutCore& aut)
+	{
+		for (const auto& i : tupleToSyms)
+		{ // add to the result automata symbols that has not been translated yet.
+			const auto& tupleInd = i.first;
+			if (exploredTuples.count(tupleInd))
+			{
+				continue;
+			}
+
+			for (const auto& sym : i.second)
+			{
+				const size_t translSym =
+					translator.insertItem(std::unordered_set<std::string>({sym}));
+				aut.AddTransition(tupleStore.at(tupleInd), translSym, parent);
+			}
+		}
+	}
+
+	template <class StateTupleInd, class SymbolType, class StateType, class TupleStore>
+	void translate(
+			const VATA::StateToUsed&   used,
+			VATA::SymbolTranslator&    translator,
+			VATA::ExplicitTreeAutCore& aut,
+			const TupleStore&          tupleStore)
+	{
+		for (const auto& item : used)
+		{
+			std::unordered_set<StateTupleInd> addedTuples;
+			const StateType& parent = item.first;
+			const auto& tupleToSyms = item.second;
+			
+			translateIntersections<SymbolType>(
+					parent, tupleToSyms, tupleStore, addedTuples,  translator, aut);
+
+			translateSingleSymbols(parent, tupleToSyms, tupleStore, addedTuples, translator, aut);
+			
+		}
+	}
+
+	void printExpl(
+		const VATA::ExplicitTreeAutCore &aut)
+	{
+		for (const auto& trans : aut)
+		{
+			std::cerr << trans.GetParent() << " " << trans.GetSymbol() << " (";
+			for (const auto state : trans.GetChildren()) std::cerr << state << " ";
+			std::cerr << ")\n";
 		}
 	}
 }
 
 
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
-		const BDDTDTreeAutCore&               aut,
-		VATA::StateToUsed&                    stateToUsed,
-		CondColApplyFunctor<StateTupleSet, StateType, StateTuple>& collector)
+		const BDDTDTreeAutCore&                                    aut,
+		VATA::StateToUsed&                                         stateToUsed,
+		std::vector<StateTuple>&                                   tupleStore)
 {
+	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
+	std::unordered_map<const StateTuple*, size_t> tupleMap;
+
 	for (auto stateBddPair : aut.GetStates())
 	{	// for all states
 		const StateType& state = stateBddPair.first;
@@ -101,12 +147,19 @@ void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 
 			BDD symbolBdd(strSymbol.second, true, false);
 
-			//collector.Clear();
+			collector.Clear();
 			collector(transMtbdd, symbolBdd);
 
 			for (const StateTuple& tuple : collector.GetAccumulator())
 			{	// for each state tuple for which there is a transition
-				stateToUsed.insertSymbol(state, &tuple, symbol);
+				if (!tupleMap.count(&tuple))
+				{
+					tupleStore.push_back(StateTuple(tuple));
+					tupleMap[&tuple] = tupleStore.size()-1;
+				}
+				size_t ind = tupleMap[&tuple];
+				
+				stateToUsed.insertSymbol(state, ind, symbol);
 			}
 		}
 	}
@@ -119,11 +172,13 @@ void VATA::BDDTopDownSimExpl::Translate(
 {
 
 	StateToUsed stateToUsed;
-	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
-	loadUsedSymbols(aut, stateToUsed, collector);
+	TupleStore tupleStore;
+	loadUsedSymbols(aut, stateToUsed, tupleStore);
 	
 	SymbolTranslator translator;
-	translate<StateTuple, SymbolType, StateType>(stateToUsed, translator, explAut);
+	translate<StateTupleInd, SymbolType, StateType, TupleStore>(
+			stateToUsed, translator, explAut, tupleStore);
 
-	for (auto trans : explAut) std::cerr << explAut.ToString(trans) << std::endl;
+	std::cerr << translator << std::endl;
+	printExpl(explAut);
 }
