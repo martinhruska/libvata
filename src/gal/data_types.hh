@@ -12,6 +12,7 @@
 namespace VATA {
 	class SymbolTranslator;
 	class StateToUsed;
+	class TupleStore;
 }
 
 class VATA::SymbolTranslator :
@@ -106,6 +107,38 @@ public:
 		{
 			(*this)[state] = UsedSymbols();
 		}
+	}
+};
+
+
+class VATA::TupleStore : public std::vector<VATA::BDDTopDownSimExpl::StateTuple>
+{
+private:
+	using StateTuple  = BDDTopDownSimExpl::StateTuple;
+public:
+	int findTuple(const StateTuple& tuple)
+	{
+		for(size_t j = 0; j < this->size(); ++j)
+		{
+			bool eq = true;
+			const auto& ts = this->at(j);
+			if (ts.size() != tuple.size())
+			{
+				continue;
+			}
+
+			for(size_t i = 0; i < ts.size(); ++i)
+			{
+				eq &= tuple.at(i) == ts.at(i);
+			}
+			
+			if (eq)
+			{
+				return j;
+			}
+		}
+
+		return -1;
 	}
 };
 

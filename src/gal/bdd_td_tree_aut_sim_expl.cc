@@ -26,17 +26,22 @@ namespace {
 	}
 
 
-	template<class SymbolType, class StateType, class TupleToSyms, class TupleStore, class ExploredTuples>
+	/**
+	 * Translates set of the symbols to a new symbol when the set is common
+	 * for more transitions. a(q1) -> p, b(q1) -> p, a(q2) -> p, b(q2) -> p,
+	 * then {a,b} is mapped to, e.g., A
+	 */
+	template<class SymbolType, class StateType, class TupleToSyms, class ExploredTuples>
 	void translateIntersections(
 			const StateType            parent,
 			const TupleToSyms&         tupleToSyms,
-			const TupleStore&          tupleStore, 
+			const VATA::TupleStore&    tupleStore, 
 			ExploredTuples&            exploredTuples,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut)
 	{
 		for (const auto& a : tupleToSyms)
-		{ // translate all common symbols for more transitions
+		{
 			for (const auto& b : tupleToSyms)
 			{
 				auto isect = [](
@@ -59,11 +64,11 @@ namespace {
 	}
 
 
-	template <class TupleToSyms, class StateType, class TupleStore, class ExploredTuples>
+	template <class TupleToSyms, class StateType, class ExploredTuples>
 	void translateSingleSymbols(
 			const StateType            parent,
 			const TupleToSyms&         tupleToSyms,
-			const TupleStore&          tupleStore, 
+			const VATA::TupleStore&    tupleStore, 
 			ExploredTuples&            exploredTuples,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut)
@@ -85,12 +90,13 @@ namespace {
 		}
 	}
 
-	template <class StateTupleInd, class SymbolType, class StateType, class TupleStore>
+
+	template <class StateTupleInd, class SymbolType, class StateType>
 	void translate(
 			const VATA::StateToUsed&   used,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut,
-			const TupleStore&          tupleStore)
+			const VATA::TupleStore&    tupleStore)
 	{
 		for (const auto& item : used)
 		{
@@ -106,6 +112,7 @@ namespace {
 		}
 	}
 
+
 	void printExpl(
 		const VATA::ExplicitTreeAutCore &aut)
 	{
@@ -118,38 +125,11 @@ namespace {
 	}
 }
 
-template<class Tuple, class TupleStore>
-int findTuple(
-		Tuple&                                                     tuple,
-		TupleStore&                                                tupleStore)
-{
-	for(size_t j = 0; j < tupleStore.size(); ++j)
-	{
-		bool eq = true;
-		const auto& ts = tupleStore.at(j);
-		if (ts.size() != tuple.size())
-		{
-			continue;
-		}
-
-		for(size_t i = 0; i < ts.size(); ++i)
-		{
-			eq &= tuple.at(i) == ts.at(i);
-		}
-		
-		if (eq)
-		{
-			return j;
-		}
-	}
-
-	return -1;
-}
 
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
-		const BDDTDTreeAutCore&                                    aut,
-		VATA::StateToUsed&                                         stateToUsed,
-		TupleStore&                                                tupleStore)
+		const BDDTDTreeAutCore&               aut,
+		VATA::StateToUsed&                    stateToUsed,
+		TupleStore&                           tupleStore)
 {
 	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
 
@@ -173,7 +153,7 @@ void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 
 			for (const StateTuple& tuple : collector.GetAccumulator())
 			{	// for each state tuple for which there is a transition
-				int ind = findTuple(tuple, tupleStore);
+				int ind = tupleStore.findTuple(tuple);
 				if (ind < 0)
 				{
 					tupleStore.push_back(StateTuple(tuple));
@@ -197,7 +177,7 @@ void VATA::BDDTopDownSimExpl::Translate(
 	loadUsedSymbols(aut, stateToUsed, tupleStore);
 	
 	SymbolTranslator translator;
-	translate<StateTupleInd, SymbolType, StateType, TupleStore>(
+	translate<StateTupleInd, SymbolType, StateType>(
 			stateToUsed, translator, explAut, tupleStore);
 
 	std::cerr << translator << std::endl;

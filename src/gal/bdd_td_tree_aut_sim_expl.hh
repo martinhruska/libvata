@@ -12,6 +12,7 @@ namespace VATA
 	class ExplicitTreeAutCore;
 	class BDDTopDownSimExpl;
 	class StateToUsed;
+	class TupleStore;
 }
 	
 template<class StateTupleSet, class StateType, class StateTuple>
@@ -27,13 +28,12 @@ private: // data types
 	using TransMTBDD                 = BDDTDTreeAutCore::TransMTBDD;
 	using BDD                        = BDDTDTreeAutCore::BDD;
 	using StateTupleSet              = BDDTDTreeAutCore::StateTupleSet;
-	using TupleStore                 = std::vector<StateTuple>;
-
 	using SymbolType                 = std::string;
+	using UsedSymbols                = std::unordered_map<StateTupleInd, std::unordered_set<SymbolType>>;
 	
-	using UsedSymbols = std::unordered_map<StateTupleInd, std::unordered_set<SymbolType>>;
 	friend class StateToUsed;
 	friend class SymbolTranslator;
+	friend class TupleStore;
 
 public:
 	static void Translate(
@@ -42,9 +42,9 @@ public:
 
 private:
 	static void loadUsedSymbols(
-			const BDDTDTreeAutCore&                                     aut,
-			VATA::StateToUsed&                                          stateToUsed,
-			TupleStore&                                                 tupleStore);
+			const BDDTDTreeAutCore&             aut,
+			VATA::StateToUsed&                  stateToUsed,
+			TupleStore&                         tupleStore);
 };
 
 #endif
