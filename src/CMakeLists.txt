@@ -10,7 +10,6 @@ set(basic_c_compiler_flags_list
   -pedantic-errors
   -Wextra
   -Wall
-  -g
   -Wfloat-equal
   -fdiagnostics-show-option
   -march=native
@@ -21,6 +20,7 @@ set(basic_cxx_compiler_add_flags_list
   -std=c++11
   -Wctor-dtor-privacy
   -Weffc++
+  -g
   -Woverloaded-virtual
 )
 

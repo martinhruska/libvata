@@ -39,11 +39,6 @@ namespace {
 		{ // translate all common symbols for more transitions
 			for (const auto& b : tupleToSyms)
 			{
-				if (a.first == b.first)
-				{ // pointer to state tuples are same -> continue
-					continue;
-				}
-
 				auto isect = [](
 						const SymbolType& lhsItem,
 						const std::unordered_set<SymbolType>& rhs) -> bool {
@@ -123,14 +118,40 @@ namespace {
 	}
 }
 
+template<class Tuple, class TupleStore>
+int findTuple(
+		Tuple&                                                     tuple,
+		TupleStore&                                                tupleStore)
+{
+	for(size_t j = 0; j < tupleStore.size(); ++j)
+	{
+		bool eq = true;
+		const auto& ts = tupleStore.at(j);
+		if (ts.size() != tuple.size())
+		{
+			continue;
+		}
+
+		for(size_t i = 0; i < ts.size(); ++i)
+		{
+			eq &= tuple.at(i) == ts.at(i);
+		}
+		
+		if (eq)
+		{
+			return j;
+		}
+	}
+
+	return -1;
+}
 
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 		const BDDTDTreeAutCore&                                    aut,
 		VATA::StateToUsed&                                         stateToUsed,
-		std::vector<StateTuple>&                                   tupleStore)
+		TupleStore&                                                tupleStore)
 {
 	CondColApplyFunctor<StateTupleSet, StateType, StateTuple> collector;
-	std::unordered_map<const StateTuple*, size_t> tupleMap;
 
 	for (auto stateBddPair : aut.GetStates())
 	{	// for all states
@@ -152,12 +173,12 @@ void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 
 			for (const StateTuple& tuple : collector.GetAccumulator())
 			{	// for each state tuple for which there is a transition
-				if (!tupleMap.count(&tuple))
+				int ind = findTuple(tuple, tupleStore);
+				if (ind < 0)
 				{
 					tupleStore.push_back(StateTuple(tuple));
-					tupleMap[&tuple] = tupleStore.size()-1;
+					ind = tupleStore.size() - 1;
 				}
-				size_t ind = tupleMap[&tuple];
 				
 				stateToUsed.insertSymbol(state, ind, symbol);
 			}
