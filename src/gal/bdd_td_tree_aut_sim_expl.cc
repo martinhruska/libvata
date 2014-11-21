@@ -9,11 +9,11 @@
 
 namespace {
 
-	template <class Op>
+	template <class Op, class SymbolSet>
 	void setOp(
-			const std::unordered_set<std::string>& a,
-			const std::unordered_set<std::string>& b,
-			std::unordered_set<std::string>&       res,
+			const SymbolSet&                       a,
+			const SymbolSet&                       b,
+			SymbolSet&                             res,
 			Op                                     op)
 	{
 		for (const auto& ia : a)
@@ -26,67 +26,84 @@ namespace {
 	}
 
 
+	template<class StateType, class StateTuple, class SymbolSet, class Op>
+	void translateSymbols(
+			const StateType            parent,
+			const StateTuple&          tuple,
+			const SymbolSet&           lhs,
+			const SymbolSet&           rhs,
+			Op                         op,
+			SymbolSet&                 processedSymbols,
+			VATA::SymbolTranslator&    translator,
+			VATA::ExplicitTreeAutCore& aut)
+	{
+		SymbolSet resSet;
+		setOp(lhs, rhs, resSet, op);
+		std::cerr << "A: {"; for (const auto& s : lhs) std::cerr << s << ", "; std::cerr << "}\n";
+		std::cerr << "B: {"; for (const auto& s : rhs) std::cerr << s << ", "; std::cerr << "}\n";
+		std::cerr << "INTER: {"; for (const auto& s : resSet) std::cerr << s << ", "; std::cerr << "}\n";
+		if (!resSet.empty())
+		{
+			const size_t translSym = translator.insertItem(resSet);
+			aut.AddTransition(tuple, translSym, parent);
+			processedSymbols.insert(resSet.begin(), resSet.end());
+		}
+	}
+
 	/**
 	 * Translates set of the symbols to a new symbol when the set is common
 	 * for more transitions. a(q1) -> p, b(q1) -> p, a(q2) -> p, b(q2) -> p,
 	 * then {a,b} is mapped to, e.g., A
 	 */
-	template<class SymbolType, class StateType, class TupleToSyms, class ExploredTuples>
-	void translateIntersections(
+	template<class SymbolType, class StateType, class TupleToSyms>
+	void translateParent(
 			const StateType            parent,
 			const TupleToSyms&         tupleToSyms,
 			const VATA::TupleStore&    tupleStore, 
-			ExploredTuples&            exploredTuples,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut)
 	{
+		std::cerr << "Start " << parent << "\n";
 		for (const auto& a : tupleToSyms)
 		{
+			std::unordered_set<SymbolType> processedSymbols;
 			for (const auto& b : tupleToSyms)
 			{
+				if (a.first == b.first)
+				{
+					continue;
+				}
+
 				auto isect = [](
 						const SymbolType& lhsItem,
 						const std::unordered_set<SymbolType>& rhs) -> bool {
 					return rhs.count(lhsItem);
 				};
-				std::unordered_set<SymbolType> intersect;
-				setOp(a.second, b.second, intersect, isect);
-				if (intersect.empty())
-				{
-					continue;
-				}
+				const auto& tuple = tupleStore.at(a.first);
+				auto adder = [&processedSymbols, &translator, &aut, &tuple, &parent] (
+						const std::unordered_set<SymbolType>& resSet) {
+					const size_t translSym = translator.insertItem(resSet);
+					aut.AddTransition(tuple, translSym, parent);
+					processedSymbols.insert(resSet.begin(), resSet.end());
+				};
 
-				const size_t translSym = translator.insertItem(intersect);
-				aut.AddTransition(tupleStore.at(a.first), translSym, parent);
-				exploredTuples.insert(a.first); // mark that it was translated
-			}
-		}
-	}
-
-
-	template <class TupleToSyms, class StateType, class ExploredTuples>
-	void translateSingleSymbols(
-			const StateType            parent,
-			const TupleToSyms&         tupleToSyms,
-			const VATA::TupleStore&    tupleStore, 
-			ExploredTuples&            exploredTuples,
-			VATA::SymbolTranslator&    translator,
-			VATA::ExplicitTreeAutCore& aut)
-	{
-		for (const auto& i : tupleToSyms)
-		{ // add to the result automata symbols that has not been translated yet.
-			const auto& tupleInd = i.first;
-			if (exploredTuples.count(tupleInd))
-			{
-				continue;
+				translateSymbols(
+						parent, tupleStore.at(a.first),
+						a.second, b.second,
+						isect, processedSymbols,
+						translator, aut);
 			}
 
-			for (const auto& sym : i.second)
-			{
-				const size_t translSym =
-					translator.insertItem(std::unordered_set<std::string>({sym}));
-				aut.AddTransition(tupleStore.at(tupleInd), translSym, parent);
-			}
+			auto diff = [](
+					const SymbolType& lhsItem,
+					const std::unordered_set<SymbolType>& rhs) -> bool {
+				return !rhs.count(lhsItem);
+			};
+			translateSymbols(
+						parent, tupleStore.at(a.first),
+						a.second, processedSymbols,
+						diff, processedSymbols,
+						translator, aut);
 		}
 	}
 
@@ -100,15 +117,11 @@ namespace {
 	{
 		for (const auto& item : used)
 		{
-			std::unordered_set<StateTupleInd> addedTuples;
 			const StateType& parent = item.first;
 			const auto& tupleToSyms = item.second;
 			
-			translateIntersections<SymbolType>(
-					parent, tupleToSyms, tupleStore, addedTuples,  translator, aut);
-
-			translateSingleSymbols(parent, tupleToSyms, tupleStore, addedTuples, translator, aut);
-			
+			translateParent<SymbolType>(
+					parent, tupleToSyms, tupleStore, translator, aut);
 		}
 	}
 
