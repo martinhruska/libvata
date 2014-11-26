@@ -47,8 +47,9 @@ namespace {
 
 
 	/**
-	 * Translates set of the symbols to a new symbol when the set is common
-	 * for more transitions. a(q1) -> p, b(q1) -> p, a(q2) -> p, b(q2) -> p,
+	 * Translates set of the symbols to a new symbol when the translated set is common
+	 * for more transitions. Eq. when there is
+	 * a(q1) -> p, b(q1) -> p, a(q2) -> p, b(q2) -> p,
 	 * then {a,b} is mapped to, e.g., A
 	 */
 	template<class SymbolType, class StateType, class TupleToSyms>
@@ -92,7 +93,7 @@ namespace {
 
 
 	template <class StateTupleInd, class SymbolType, class StateType>
-	void translate(
+	void internalTranslate(
 			const VATA::StateToUsed&   used,
 			VATA::SymbolTranslator&    translator,
 			VATA::ExplicitTreeAutCore& aut,
@@ -122,6 +123,7 @@ namespace {
 }
 
 
+// Documentation in a header file
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 		const BDDTDTreeAutCore&               aut,
 		VATA::StateToUsed&                    stateToUsed,
@@ -173,7 +175,7 @@ void VATA::BDDTopDownSimExpl::Translate(
 	loadUsedSymbols(aut, stateToUsed, tupleStore);
 	
 	SymbolTranslator translator;
-	translate<StateTupleInd, SymbolType, StateType>(
+	internalTranslate<StateTupleInd, SymbolType, StateType>(
 			stateToUsed, translator, explAut, tupleStore);
 
 	std::cerr << translator << std::endl;
