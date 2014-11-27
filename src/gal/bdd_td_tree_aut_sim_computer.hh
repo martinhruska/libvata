@@ -4,20 +4,19 @@
 #include <vata/aut_base.hh>
 #include "../explicit_tree_aut_core.hh"
 
-
-
 namespace VATA
 {
     class ExplicitTreeAutCore;
     class BDDTopDownSimExpl;
     class StateToUsed;
     class TupleStore;
+	class BDDTopDownSimComputer;
 }
 
 class VATA::BDDTopDownSimComputer
 {
 private:
-    using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
+    //using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
 
 public:
     using ExplicitTreeAutCore = VATA::ExplicitTreeAutCore;

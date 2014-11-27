@@ -5,6 +5,7 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 # Flags for basic C files
 set(basic_c_compiler_flags_list
+  -std=c11
   -pedantic-errors
   -Wextra
   -Wall
@@ -20,7 +21,7 @@ set(basic_cxx_compiler_add_flags_list
   -Weffc++
   -g
   -Woverloaded-virtual
-  -fdiagnostics-color=always
+  #-fdiagnostics-color=always
 )
 
 # Additional flags for VATA C++ files
@@ -47,7 +48,7 @@ endforeach(param)
 include_directories(../../include)
 
 add_library(bddTDSimCore
-	bdd_td_tree_aut_sim_expl.cc
-	bdd_td_tree_aut_sim_computer.cc)
+	bdd_td_tree_aut_sim_expl.cc)
+	#bdd_td_tree_aut_sim_computer.cc)
 
 set_source_files_properties(bdd_td_tree_aut_sim_expl.cc PROPERTIES COMPILE_FLAGS ${vata_cxx_compiler_flags})
