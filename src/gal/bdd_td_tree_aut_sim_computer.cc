@@ -5,8 +5,18 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
         const ExplicitTreeAutCore& aut
 )
 {
+    StateDiscontBinaryRelation prevSim;
     StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(aut.states.size() * aut.states.size(), true, aut.states());
-    StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(aut.states.size() * aut.states.size(), true, aut.states());
+
+//    while(prevSim != sim)
+//    {
+//        prevSim = sim;
+//        for(auto trans&: aut)
+//        {
+//            trans.GetSymbol();
+//        }
+//    }
+
 }
 
 
