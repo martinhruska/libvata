@@ -822,6 +822,18 @@ public:   // methods
 		return os;
 	}
 
+    bool operator==(const DiscontBinaryRelation& rel) 
+    {
+        for (size_t i = 0; i < rel.size(); ++i)
+        {
+            for(size_t j = 0; j < rel.size(); ++j)
+            {
+                if(this->get(i, j) != rel.get(i, j))
+                    return false;
+            }
+        }
+        return true;
+    }
 
 	/**
 	 * @brief  Creates a mapping from elements to their images

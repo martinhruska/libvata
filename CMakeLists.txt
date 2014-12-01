@@ -41,8 +41,8 @@ if (NOT(GCC_VERSION VERSION_GREATER ${REQUIRED_GCC_VERSION}
 endif()
 
 # You can force the GCC version here
-set(CMAKE_C_COMPILER "gcc-4.8")
-set(CMAKE_CXX_COMPILER "g++-4.8")
+#set(CMAKE_C_COMPILER "gcc-4.8")
+#set(CMAKE_CXX_COMPILER "g++-4.8")
 
 # Uncomment for the 32-bit memory model
 # set(CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE} -m32")
