@@ -1,0 +1,1 @@
+build/cli/vata -r expl sim src/gal/lukas_example
