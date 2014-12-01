@@ -6,11 +6,12 @@
 typedef VATA::ExplicitTreeAutCore::SymbolType SymbolType;
 typedef VATA::ExplicitTreeAutCore::StateType  StateType;
 typedef VATA::ExplicitTreeAutCore::StateTuple StateTuple;
+typedef VATA::ExplicitTreeAutCore::TuplePtr   TuplePtr;
 
-typedef std::vector<std::pair<SymbolType, const StateTuple*>> SuperState;
+typedef std::vector<std::pair<SymbolType, TuplePtr>> SuperState;
 typedef std::unordered_map<size_t, SuperState> AritySuperstates;
 
-typedef std::unordered_map<const StateTuple*, std::unordered_set<StateType>> Parents;
+typedef std::unordered_map<TuplePtr, std::unordered_set<StateType>> Parents;
 
 namespace {
 void initRel(
@@ -48,8 +49,8 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
         {
             container[arity] = SuperState();
         }
-        parents[&trans.GetChildren()].insert(trans.GetParent());
-        container[arity].push_back(std::pair<SymbolType, const StateTuple*>(trans.GetSymbol(), &trans.GetChildren()));
+        parents[aut.FindTuplePtr(trans.GetChildren())].insert(trans.GetParent());
+        container[arity].push_back(std::pair<SymbolType, const TuplePtr>(trans.GetSymbol(), aut.FindTuplePtr(trans.GetChildren())));
     }
 
     while(prevSim != sim)
