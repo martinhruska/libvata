@@ -178,6 +178,6 @@ void VATA::BDDTopDownSimExpl::Translate(
 	internalTranslate<StateTupleInd, SymbolType, StateType>(
 			stateToUsed, translator, explAut, tupleStore);
 
-	std::cerr << translator << std::endl;
+	//std::cerr << translator << std::endl;
 	//printExpl(explAut);
 }
