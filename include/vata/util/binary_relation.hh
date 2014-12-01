@@ -822,8 +822,9 @@ public:   // methods
 		return os;
 	}
 
-    bool operator==(const DiscontBinaryRelation& rel) 
+    bool operator==(const DiscontBinaryRelation& rel) const 
     {
+		assert(this->size() == rel.size());
         for (size_t i = 0; i < rel.size(); ++i)
         {
             for(size_t j = 0; j < rel.size(); ++j)
@@ -835,7 +836,7 @@ public:   // methods
         return true;
     }
     
-    bool operator!=(const DiscontBinaryRelation& rel) 
+    bool operator!=(const DiscontBinaryRelation& rel) const
     {
         return !(this->operator==(rel));
     }
