@@ -834,6 +834,12 @@ public:   // methods
         }
         return true;
     }
+    
+    bool operator!=(const DiscontBinaryRelation& rel) 
+    {
+        return !(this->operator==(rel));
+    }
+
 
 	/**
 	 * @brief  Creates a mapping from elements to their images
