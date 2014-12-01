@@ -11,7 +11,8 @@ typedef VATA::ExplicitTreeAutCore::TuplePtr   TuplePtr;
 typedef std::vector<std::pair<SymbolType, TuplePtr>> SuperState;
 typedef std::unordered_map<size_t, SuperState> AritySuperstates;
 
-typedef std::unordered_map<TuplePtr, std::unordered_set<StateType>> Parents;
+typedef std::unordered_map<SymbolType, std::unordered_set<StateType>> Parents;
+typedef std::unordered_map<TuplePtr, Parents> InverseTrans;
 
 namespace {
 void initRel(
@@ -40,7 +41,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 	initRel(prevSim, false, stateNumber);
 
     AritySuperstates container;
-    Parents parents;
+    InverseTrans parents;
 
     for (const auto &trans: aut)
     {
@@ -49,8 +50,19 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
         {
             container[arity] = SuperState();
         }
-        parents[aut.FindTuplePtr(trans.GetChildren())].insert(trans.GetParent());
-        container[arity].push_back(std::pair<SymbolType, const TuplePtr>(trans.GetSymbol(), aut.FindTuplePtr(trans.GetChildren())));
+		const auto& tuplePtr = aut.FindTuplePtr(trans.GetChildren());
+        container[arity].push_back(std::pair<SymbolType, const TuplePtr>(trans.GetSymbol(), tuplePtr));
+
+		if (parents.count(tuplePtr))
+		{
+			parents[tuplePtr] = Parents();
+		}
+		if (parents[tuplePtr].count(trans.GetSymbol()))
+		{
+			parents[tuplePtr][trans.GetSymbol()] = std::unordered_set<StateType>();
+		}
+	
+		parents[tuplePtr][trans.GetSymbol()].insert(trans.GetParent());
     }
 
     while(prevSim != sim)
@@ -62,21 +74,22 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 				prevSim.set(i,j,sim.get(i,j));
 			}
 		}
+
         for(const auto& arity_pair : container)
         {
             for(const auto& q : arity_pair.second)
             {
-                auto tmp = std::unordered_set<size_t>();
+                auto tmp = std::unordered_set<StateType>();
                 for(const auto& r : arity_pair.second)
                 {
                     if (q.first != r.first) // symbols differ
                     {
                         continue;
                     }
-                    tmp.insert(parents[r.second].begin(), parents[r.second].end());
+                    tmp.insert(parents[r.second][q.first].begin(), parents[r.second][q.first].end());
                 }
 				std::cerr << tmp.size() << '\n';
-                simRefinement(sim, parents[q.second], tmp);
+                simRefinement(sim, parents[q.second][q.first], tmp);
             }
         }
     }
