@@ -1,9 +1,6 @@
 #ifndef _VATA_BDD_TD_SIM_COMPUTER_HH_
 #define _VATA_BDD_TD_SIM_COMPUTER_HH_
 
-#include <vata/aut_base.hh>
-#include "../explicit_tree_aut_core.hh"
-
 namespace VATA
 {
     class ExplicitTreeAutCore;
@@ -11,6 +8,10 @@ namespace VATA
     class StateToUsed;
     class TupleStore;
 	class BDDTopDownSimComputer;
+	namespace Util
+	{
+		class DiscontBinaryRelation;
+	}
 }
 
 class VATA::BDDTopDownSimComputer
@@ -19,8 +20,7 @@ private:
     //using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
 
 public:
-    using ExplicitTreeAutCore = VATA::ExplicitTreeAutCore;
-    using StateDiscontBinaryRelation = VATA::Util::DiscontBinaryRelation;
+    typedef Util::DiscontBinaryRelation StateDiscontBinaryRelation;
 
 public:
     static StateDiscontBinaryRelation ComputeSimulation(

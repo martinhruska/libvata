@@ -1,4 +1,5 @@
 #include "bdd_td_tree_aut_sim_computer.hh"
+#include "../explicit_tree_aut_core.hh"
 #include <vata/aut_base.hh>
 
 VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimComputer::ComputeSimulation(
@@ -6,7 +7,8 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 )
 {
     StateDiscontBinaryRelation prevSim;
-    StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(aut.states.size() * aut.states.size(), true, aut.states());
+	const size_t stateNumber = aut.GetStatesNumber();
+    StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(stateNumber*stateNumber, true, stateNumber);
 
 //    while(prevSim != sim)
 //    {
@@ -17,6 +19,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 //        }
 //    }
 
+	return sim;
 }
 
 

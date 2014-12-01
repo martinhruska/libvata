@@ -760,6 +760,22 @@ public:   // methods
 		}
 	}
 
+	size_t GetStatesNumber() const
+	{
+		class Counter : public std::unordered_set<StateType>
+		{
+		public:
+			void operator()(StateType state)
+			{
+				this->insert(state);
+			}
+		};
+
+		Counter c;
+		BuildStateIndex(c);
+		return c.size();
+	}
+
 	template <class Index>
 	void ReindexStates(
 		ExplicitTreeAutCore&      dst,
