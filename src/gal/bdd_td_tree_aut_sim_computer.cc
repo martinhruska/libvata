@@ -6,11 +6,13 @@
 typedef VATA::ExplicitTreeAutCore::SymbolType SymbolType;
 typedef VATA::ExplicitTreeAutCore::StateType  StateType;
 typedef VATA::ExplicitTreeAutCore::StateTuple StateTuple;
+typedef VATA::ExplicitTreeAutCore::TuplePtr   TuplePtr;
 
-typedef std::vector<std::pair<SymbolType, const StateTuple*>> SuperState;
+typedef std::vector<std::pair<SymbolType, TuplePtr>> SuperState;
 typedef std::unordered_map<size_t, SuperState> AritySuperstates;
 
-typedef std::unordered_map<const StateTuple*, std::unordered_set<StateType>> Parents;
+typedef std::unordered_map<SymbolType, std::unordered_set<StateType>> Parents;
+typedef std::unordered_map<TuplePtr, Parents> InverseTrans;
 
 namespace {
 void initRel(
@@ -36,10 +38,10 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
     StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(stateNumber, true, stateNumber);
     StateDiscontBinaryRelation prevSim = StateDiscontBinaryRelation(stateNumber, true, stateNumber);
 	initRel(sim, true, stateNumber);
-	initRel(prevSim, true, stateNumber);
+	initRel(prevSim, false, stateNumber);
 
     AritySuperstates container;
-    Parents parents;
+    InverseTrans parents;
 
     for (const auto &trans: aut)
     {
@@ -48,8 +50,19 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
         {
             container[arity] = SuperState();
         }
-        parents[&trans.GetChildren()].insert(trans.GetParent());
-        container[arity].push_back(std::pair<SymbolType, const StateTuple*>(trans.GetSymbol(), &trans.GetChildren()));
+		const auto& tuplePtr = aut.FindTuplePtr(trans.GetChildren());
+        container[arity].push_back(std::pair<SymbolType, const TuplePtr>(trans.GetSymbol(), tuplePtr));
+
+		if (parents.count(tuplePtr))
+		{
+			parents[tuplePtr] = Parents();
+		}
+		if (parents[tuplePtr].count(trans.GetSymbol()))
+		{
+			parents[tuplePtr][trans.GetSymbol()] = std::unordered_set<StateType>();
+		}
+	
+		parents[tuplePtr][trans.GetSymbol()].insert(trans.GetParent());
     }
 
     while(prevSim != sim)
@@ -61,21 +74,22 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 				prevSim.set(i,j,sim.get(i,j));
 			}
 		}
-        //prevSim = sim;
+
         for(const auto& arity_pair : container)
         {
             for(const auto& q : arity_pair.second)
             {
-                auto tmp = std::unordered_set<size_t>();
+                auto tmp = std::unordered_set<StateType>();
                 for(const auto& r : arity_pair.second)
                 {
                     if (q.first != r.first) // symbols differ
                     {
                         continue;
                     }
-                    tmp.insert(parents[r.second].begin(), parents[r.second].end());
+                    tmp.insert(parents[r.second][q.first].begin(), parents[r.second][q.first].end());
                 }
-                simRefinement(sim, parents[q.second], tmp);
+				std::cerr << tmp.size() << '\n';
+                simRefinement(sim, parents[q.second][q.first], tmp);
             }
         }
     }
