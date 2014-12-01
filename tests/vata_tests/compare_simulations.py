@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import argparse
 import numpy  as np
+import sys
 
 
 def load_matrix(text):
     size = len(text[0])
-    res = np.zeros((size -1, size -1), dtype=bool)
+    res = np.zeros((size -1, size -1), dtype=int)
     for line_index, line in enumerate(text):
         for row_index, char in enumerate(line):
             if char == '1':
@@ -59,12 +60,22 @@ if __name__ == '__main__':
     correct_matrix = load_matrix(correct_array_str)
     test_matrix = load_matrix(test_array_str)
 
+    if len(correct_matrix) == 0 and len(test_matrix) == 0:
+        print "OK"
+        sys.exit(0)
+    elif len(correct_matrix) != len(test_matrix):
+        print "NOT EQUAL"
+        sys.exit(1)
+
+
     permutation_vector = get_permutation_vector(from_order_inv, to_order)
     test_matrix_transformed = transform(test_matrix, permutation_vector)
 
     if np.all(correct_matrix == test_matrix_transformed):
         print "OK"
+        sys.exit(0)
     else:
         print "NOT EQUAL"
-        print correct_matrix == test_matrix_transformed
+        print (correct_matrix == test_matrix_transformed).astype(int)
+        sys.exit(1)
 
