@@ -179,5 +179,5 @@ void VATA::BDDTopDownSimExpl::Translate(
 			stateToUsed, translator, explAut, tupleStore);
 
 	std::cerr << translator << std::endl;
-	printExpl(explAut);
+	//printExpl(explAut);
 }

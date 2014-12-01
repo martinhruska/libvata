@@ -36,7 +36,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
     StateDiscontBinaryRelation sim = StateDiscontBinaryRelation(stateNumber, true, stateNumber);
     StateDiscontBinaryRelation prevSim = StateDiscontBinaryRelation(stateNumber, true, stateNumber);
 	initRel(sim, true, stateNumber);
-	initRel(prevSim, true, stateNumber);
+	initRel(prevSim, false, stateNumber);
 
     AritySuperstates container;
     Parents parents;
@@ -61,7 +61,6 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 				prevSim.set(i,j,sim.get(i,j));
 			}
 		}
-        //prevSim = sim;
         for(const auto& arity_pair : container)
         {
             for(const auto& q : arity_pair.second)
@@ -75,6 +74,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
                     }
                     tmp.insert(parents[r.second].begin(), parents[r.second].end());
                 }
+				std::cerr << tmp.size() << '\n';
                 simRefinement(sim, parents[q.second], tmp);
             }
         }

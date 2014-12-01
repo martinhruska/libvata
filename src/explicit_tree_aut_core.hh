@@ -595,6 +595,11 @@ public:   // methods
 		this->internalAddTransition(this->tupleLookup(children), symbol, parent);
 	}
 
+	TuplePtr FindTuplePtr(
+		const StateTuple&         tuple) const
+	{
+		return cache_.find(tuple);
+	}
 
 	bool ContainsTransition(
 		const StateTuple&         children,
