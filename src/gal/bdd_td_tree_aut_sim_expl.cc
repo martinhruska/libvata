@@ -123,6 +123,17 @@ namespace {
 }
 
 
+void copyFinalStates(
+		const VATA::BDDTDTreeAutCore&              aut,
+		VATA::ExplicitTreeAutCore&                 explAut)
+{
+	for (const auto& s : aut.GetFinalStates())
+	{
+		explAut.SetStateFinal(s);
+	}
+}
+
+
 // Documentation in a header file
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 		const BDDTDTreeAutCore&               aut,
@@ -177,6 +188,7 @@ void VATA::BDDTopDownSimExpl::Translate(
 	SymbolTranslator translator;
 	internalTranslate<StateTupleInd, SymbolType, StateType>(
 			stateToUsed, translator, explAut, tupleStore);
+	copyFinalStates(aut, explAut);
 
 	//std::cerr << translator << std::endl;
 	//printExpl(explAut);

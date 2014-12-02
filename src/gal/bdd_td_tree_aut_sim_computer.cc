@@ -115,7 +115,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 
                     tmp.insert(parents[r.second][q.first].begin(), parents[r.second][q.first].end());
                 }
-                simRefinement(sim, parents[q.second][q.first], tmp);
+                simRefinement(sim, parents[q.second][q.first], tmp, aut);
             }
         }
     }
@@ -124,9 +124,10 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 
 
 void VATA::BDDTopDownSimComputer::simRefinement(
-        StateDiscontBinaryRelation &sim,
+        StateDiscontBinaryRelation&       sim,
         const std::unordered_set<size_t>& lhs,
-        const std::unordered_set<size_t>& rhs)
+        const std::unordered_set<size_t>& rhs,
+		const ExplicitTreeAutCore&        aut)
 {
     for(auto q : lhs)
     {
@@ -134,7 +135,7 @@ void VATA::BDDTopDownSimComputer::simRefinement(
         {
             if(sim.get(q, i))
             {
-                if(rhs.count(i) == 0)
+                if((rhs.count(i) == 0) || (aut.IsStateFinal(q) && !aut.IsStateFinal(i)))
                 {
                     sim.set(q, i, false);
                 }
