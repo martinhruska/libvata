@@ -125,6 +125,12 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 	}
 	else { throw optErrorEx; }
 
+	bool bdd_spec_sim = false;
+	if (options["bdd"] == "spec")
+	{
+		bdd_spec_sim = true;
+	}
+
 	/****************************************************************************
 	 *                            Additional handling
 	 ****************************************************************************/
@@ -154,6 +160,10 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_UPWARD);
 			sp.SetNumStates(states);
+			if (bdd_spec_sim)
+			{
+				sp.SetBddAlg(true);
+			}
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
@@ -162,6 +172,10 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_DOWNWARD);
 			sp.SetNumStates(states);
+			if (bdd_spec_sim)
+			{
+				sp.SetBddAlg(true);
+			}
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
