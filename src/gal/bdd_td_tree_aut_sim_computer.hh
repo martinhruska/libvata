@@ -33,7 +33,8 @@ private:
 	static void simRefinement(
         StateDiscontBinaryRelation &sim,
         const std::unordered_set<size_t>& lhs,
-        const std::unordered_set<size_t>& rhs);
+        const std::unordered_set<size_t>& rhs,
+		const ExplicitTreeAutCore&        aut);
 
 };
 
