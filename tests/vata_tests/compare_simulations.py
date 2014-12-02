@@ -27,10 +27,10 @@ def load_order(line):
     return order, order_inv
 
 
-def get_permutation_vector(from_order_inv, to_order):
-    permutation_vector = np.zeros((len(to_order)), dtype=int)
-    for number, char in to_order.iteritems():
-        permutation_vector[number] = from_order_inv[char]
+def get_permutation_vector(to_order_inv, from_order):
+    permutation_vector = np.zeros((len(from_order)), dtype=int)
+    for number, char in from_order.iteritems():
+        permutation_vector[number] = to_order_inv[char]
     return permutation_vector
 
 
@@ -54,8 +54,8 @@ if __name__ == '__main__':
         test_order_line = f.readline()
         test_array_str = f.readlines()
 
-    _, from_order_inv = load_order(correct_order_line)
-    to_order, _ = load_order(test_order_line)
+    from_order, _ = load_order(correct_order_line)
+    _, to_order_inv = load_order(test_order_line)
 
     correct_matrix = load_matrix(correct_array_str)
     test_matrix = load_matrix(test_array_str)
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    permutation_vector = get_permutation_vector(from_order_inv, to_order)
+    permutation_vector = get_permutation_vector(to_order_inv, from_order)
     test_matrix_transformed = transform(test_matrix, permutation_vector)
 
     if np.all(correct_matrix == test_matrix_transformed):

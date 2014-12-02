@@ -7,11 +7,6 @@ success=0
 fail=0
 for file in "$@"
 do
-    if [[ $file == *result  ]]
-    then
-        continue
-    fi
-
     echo $file
     correct_result=$(mktemp)
     test_result=$(mktemp)
