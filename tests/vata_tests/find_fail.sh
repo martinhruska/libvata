@@ -8,6 +8,7 @@ fail=0
 for file in "$@"
 do
     echo $file
+
     correct_result=$(mktemp)
     test_result=$(mktemp)
 
