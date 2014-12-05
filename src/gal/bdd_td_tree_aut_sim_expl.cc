@@ -120,16 +120,16 @@ namespace {
 			std::cerr << ")\n";
 		}
 	}
-}
 
 
-void copyFinalStates(
-		const VATA::BDDTDTreeAutCore&              aut,
-		VATA::ExplicitTreeAutCore&                 explAut)
-{
-	for (const auto& s : aut.GetFinalStates())
+	void copyFinalStates(
+			const VATA::BDDTDTreeAutCore&              aut,
+			VATA::ExplicitTreeAutCore&                 explAut)
 	{
-		explAut.SetStateFinal(s);
+		for (const auto& s : aut.GetFinalStates())
+		{
+			explAut.SetStateFinal(s);
+		}
 	}
 }
 

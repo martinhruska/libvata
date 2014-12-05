@@ -33,6 +33,10 @@ public:
 	{
 		for (const auto& translated : items_)
 		{
+			if (translated.second.size() != item.size())
+			{
+				continue;
+			}
 			bool eq = true;
 			for (const auto& sym : translated.second)
 			{
@@ -128,7 +132,7 @@ public:
 			}
 
 			for(size_t i = 0; i < ts.size(); ++i)
-			{
+			{ // compare two tuples
 				eq &= tuple.at(i) == ts.at(i);
 			}
 			
