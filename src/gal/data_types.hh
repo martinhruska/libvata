@@ -37,6 +37,7 @@ public:
 			{
 				continue;
 			}
+
 			bool eq = true;
 			for (const auto& sym : translated.second)
 			{
