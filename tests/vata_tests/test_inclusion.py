@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os.path
@@ -18,21 +19,26 @@ combinatoric_functions = {'product': partial(itertools.product, repeat=2),
                           'combinations': partial(itertools.combinations, r=2)}
 
 records = []
-RunRecord = namedtuple('RunRecord', ['a1', 'a2', 'result', 'sum_states', 'sim_time', 'nosim_time'])
+RunRecord = namedtuple('RunRecord', ['a1', 'a2', 'sim_result', 'nosim_result', 'sum_states', 'sim_time', 'nosim_time'])
 
 def execute_inclusion(type, a1, a2):
     out = subprocess.check_output([script[type], a1, a2], stderr=subprocess.STDOUT)
     time, result = out.strip().split('\n')
-    return bool(result), float(time)
+    if result == 'None':
+        result = None
+        print type, a1, a2, " EXPIRED"
+    else:
+        result = bool(int(result))
+    return result, float(time)
 
 
 def test_inclusion(automata, combinatorics):
     for a1, a2 in combinatoric_functions[combinatorics](automata):
         sim_res, sim_time = execute_inclusion('sim', a1, a2)
         nosim_res, nosim_time = execute_inclusion('nosim', a1, a2)
-        if sim_res != nosim_res:
+        if sim_res != nosim_res and sim_res is not None and nosim_res is not None:
             raise Exception('Result of inclusion not equal, sim: {}, nosim: {}, files {}, {}'.format(sim_res, nosim_res, a1, a2))
-        record = RunRecord(a1, a2, sim_res, num_states[a1] + num_states[a2], sim_time, nosim_time)
+        record = RunRecord(a1, a2, sim_res, nosim_res, num_states[a1] + num_states[a2], sim_time, nosim_time)
         records.append(record)
         print record
 
@@ -51,7 +57,7 @@ def print_results():
     print
     print "a1, a2, sum_states, sim_time, nosim_time"
     for record in records:
-        print record.a1.split('/')[-1], record.a2.split('/')[-1], record.sum_states, record.sim_time, record.nosim_time
+        print record.a1.split('/')[-1], record.a2.split('/')[-1], record.sim_result, record.nosim_result, record.sum_states, record.sim_time, record.nosim_time
 
 
 if __name__ == '__main__':
