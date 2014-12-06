@@ -9,7 +9,7 @@ set(REQUIRED_GCC_VERSION 4.8.0)
 set(GCC_ALTERNATIVES g++ g++-4.8)
 
 # Uncomment to avoid dynamic linking of libraries
-#set(MAKE_STATIC_VATA ON)
+set(MAKE_STATIC_VATA ON)
 
 # check minimum GCC version
 execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
@@ -59,7 +59,7 @@ include(CTest)
 
 # Necessary packages
 find_package(FLEX REQUIRED)
-find_package(BISON 3.0.0 REQUIRED)
+find_package(BISON REQUIRED)
 find_package(Doxygen REQUIRED)
 
 set(Boost_USE_MULTITHREADED OFF)
