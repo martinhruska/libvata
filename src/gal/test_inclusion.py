@@ -47,7 +47,7 @@ def check_num_states(automata):
     for automaton in automata:
         with open(automaton) as a:
             for line in a:
-                if line.startswith('States '):
+                if line.startswith('States'):
                     num_states[automaton] = len(line[len('States '):].strip().split(' '))
                     break
 
@@ -55,7 +55,7 @@ def check_num_states(automata):
 def print_results():
     records.sort(key=lambda x: x.sum_states)
     print
-    print "a1, a2, sum_states, sim_time, nosim_time"
+    print "a1, a2, sim_result, nosim_result, sum_states, sim_time, nosim_time"
     for record in records:
         print record.a1.split('/')[-1], record.a2.split('/')[-1], record.sim_result, record.nosim_result, record.sum_states, record.sim_time, record.nosim_time
 
