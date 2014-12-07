@@ -14,6 +14,7 @@
 
 #include "gal/bdd_td_tree_aut_sim_expl.hh"
 #include "gal/bdd_td_tree_aut_sim_computer.hh"
+#include "gal/bdd_td_tree_aut_sim_efficient.hh"
 #include "bdd_td_tree_aut_core.hh"
 #include "explicit_tree_aut_core.hh"
 #include "loadable_aut.hh"
@@ -25,12 +26,13 @@ typedef VATA::AutBase::StateDiscontBinaryRelation StateDiscontBinaryRelation;
 
 namespace {
 
+template<class SimComputer>
 StateDiscontBinaryRelation computeSimulationExpl(
 		const VATA::BDDTDTreeAutCore&  core)
 {
 		VATA::ExplicitTreeAutCore aut;
 		VATA::BDDTopDownSimExpl::Translate(core, aut);
-		return VATA::BDDTopDownSimComputer::ComputeSimulation(aut);
+		return SimComputer::ComputeSimulation(aut);
 }
 
 }
@@ -38,9 +40,13 @@ StateDiscontBinaryRelation computeSimulationExpl(
 StateDiscontBinaryRelation BDDTopDownTreeAut::ComputeSimulation(
 	const SimParam&                params) const
 {
-	if (params.GetBddAlg())
+	if (params.IsBddAlg())
 	{
-		return computeSimulationExpl(*(this->core_));
+		return computeSimulationExpl<VATA::BDDTopDownSimComputer>(*(this->core_));
+	}
+	else if (params.ISBddAlgEfficient())
+	{
+		return computeSimulationExpl<VATA::BDDTopDownSimEfficient>(*(this->core_));
 	}
 
 	throw NotImplementedException(__func__);

@@ -1,5 +1,5 @@
-#ifndef _VATA_BDD_TD_SIM_COMPUTER_HH_
-#define _VATA_BDD_TD_SIM_COMPUTER_HH_
+#ifndef _VATA_BDD_TD_SIM_EFFICIENT_HH_
+#define _VATA_BDD_TD_SIM_EFFICIENT_HH_
 
 #include <unordered_set>
 
