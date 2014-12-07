@@ -80,6 +80,11 @@ namespace VATA
 		{
 			bddAlg_ = e_sim_spec::SPEC;
 		}
+		
+		void SetBddAlg(e_sim_spec val)
+		{
+			bddAlg_ = val;
+		}
 
 		void SetBddAlgEfficient()
 		{

@@ -125,10 +125,14 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 	}
 	else { throw optErrorEx; }
 
-	bool bdd_spec_sim = false;
+	SimParam::e_sim_spec bdd_spec_sim = static_cast<SimParam::e_sim_spec>(-1);
 	if (options["bdd"] == "spec")
 	{
-		bdd_spec_sim = true;
+		bdd_spec_sim = SimParam::e_sim_spec::SPEC;
+	}
+	else if (options["bdd"] == "spec1")
+	{
+		bdd_spec_sim = SimParam::e_sim_spec::SPEC1;
 	}
 
 	/****************************************************************************
@@ -160,10 +164,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_UPWARD);
 			sp.SetNumStates(states);
-			if (bdd_spec_sim)
-			{
-				sp.SetBddAlg();
-			}
+			sp.SetBddAlg(bdd_spec_sim);
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
@@ -172,10 +173,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_DOWNWARD);
 			sp.SetNumStates(states);
-			if (bdd_spec_sim)
-			{
-				sp.SetBddAlg();
-			}
+			sp.SetBddAlg(bdd_spec_sim);
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
