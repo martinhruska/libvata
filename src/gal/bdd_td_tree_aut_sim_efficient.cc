@@ -110,10 +110,10 @@ void initCounter(
 			addKeyToHash<LStateToCounter>(counter[symbol], rank);
 			for (const auto& lstate : stateSet)
 			{
-				addKeyToHash<RStateToCounter>(counter[symbol][lstate], lstate);
+				addKeyToHash<RStateToCounter>(counter[symbol][rank], lstate);
 				for (const auto& rstate : stateSet)
 				{
-					addValueToHash(counter[symbol][lstate][rstate], 0, rstate);
+					addValueToHash(counter[symbol][rank][lstate], 0, rstate);
 				}
 			}
 		}
@@ -157,6 +157,43 @@ bool isSimBreak(const Positions& qpos, const ParentToPos& pPos)
 	return false;
 }
 
+
+void addCard(
+		Card& card,
+		const StateType& parent,
+		const SymbolType& symbol,
+		const RankType&  rank)
+{
+	addKeyToHash<SymToCard>(card, parent);
+	addKeyToHash<RankToCard>(card[parent], symbol);
+	addValueToHash(card[parent][symbol], 0, rank);
+}
+
+void addReverse(
+		ReverseTrans& reverse,
+		const StateType& parent,
+		const StateType& state,
+		const SymbolType& symbol)
+{
+	addKeyToHash<SymToParents>(reverse, state);
+	addKeyToHash<ParentsReverse>(reverse[state], symbol);
+	reverse[state][symbol].insert(parent);
+}
+
+
+void addPositions(
+		StatePos& positions,
+		const StateType& parent,
+		const StateType& state,
+		const SymbolType& symbol,
+		const Position pos)
+{
+	addKeyToHash<SymToPos>(positions, state);
+	addKeyToHash<ParentToPos>(positions[state], symbol);
+	addKeyToHash<Positions>(positions[state][symbol], parent);
+	positions[state][symbol][parent].insert(pos);
+}
+
 }
 
 VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEfficient::ComputeSimulation(
@@ -168,6 +205,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	SymbolSet symbolSet;
 	ReverseTrans reverse;
 	StatePos positions;
+	std::vector<ExplicitTreeAutCore::Transition> leafTrans;
 
     for (const auto& trans: aut)
     {
@@ -175,10 +213,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		const StateType& parent = trans.GetParent();
 		const RankType& rank = trans.GetChildren().size();
 
-		addKeyToHash<SymToCard>(card, parent);
-		addKeyToHash<RankToCard>(card[parent], symbol);
-		addValueToHash(card[parent][symbol], 0, rank);
-
+		addCard(card, parent, symbol, rank);
 		card[parent][symbol][rank] += 1;
 		
 		stateSet.insert(parent);
@@ -188,36 +223,44 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		{
 			const StateType& state = children[i];
 			stateSet.insert(state);
-
-			addKeyToHash<SymToParents>(reverse, state);
-			addKeyToHash<ParentsReverse>(reverse[state], symbol);
-			reverse[state][symbol].insert(parent);
-
-			addKeyToHash<SymToPos>(positions, state);
-			addKeyToHash<ParentToPos>(positions[state], symbol);
-			addKeyToHash<Positions>(positions[state][symbol], parent);
-			positions[state][symbol][parent].insert(i);
+			addReverse(reverse, parent, state, symbol);
+			addPositions(positions, parent, state, symbol, i);
+		}
+		if (children.size() == 0)
+		{
+			leafTrans.push_back(trans);
 		}
 
 		addKeyToHash<RankSet>(symbolSet, symbol);
 		symbolSet[symbol].insert(rank);
+	}
+	
+	const StateType mock = stateSet.size();
+	for (const auto& trans : leafTrans)
+	{
+		const SymbolType& symbol = trans.GetSymbol();
+		const StateType& parent = trans.GetParent();
+
+		stateSet.insert(mock);
+		addReverse(reverse, parent, mock, symbol);
+		addPositions(positions, parent, mock, symbol, 0);
 	}
 
 	Counter counter;
 	initCounter(counter, stateSet, symbolSet);
 	
 	const size_t stateNumber = stateSet.size();
-    Sim sim(stateNumber, true, stateNumber);
+    Sim sim(stateNumber, true, stateNumber-1);
 	initRel(sim, true, stateNumber);
 	Queue queue;
 	initQueueAndSim(queue, sim, aut.GetFinalStates(), stateSet);
 
-	while (!queue.size())
+	while (queue.size())
 	{
 		const QueueItem item = queue.back();
 		const StateType p = item.first;
 		const StateType q = item.second;
-		queue.back();
+		queue.pop_back();
 
 		for (const auto& symRankPair : symbolSet)
 		{
@@ -247,59 +290,36 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 			}
 		}
 	}
-	/*
-        const size_t arity = trans.GetChildren().size();
-        if( container.count(arity) == 0)
-        {
-            container[arity] = SuperState();
-        }
-		const auto& tuplePtr = aut.FindTuplePtr(trans.GetChildren());
-        container[arity].push_back(std::pair<SymbolType, const TuplePtr>(trans.GetSymbol(), tuplePtr));
 
-		if (!parents.count(tuplePtr))
+	for (const auto& symToRank : counter)
+	{
+		const SymbolType& a = symToRank.first;
+		for (const auto& rankToLstate : symToRank.second)
 		{
-			parents[tuplePtr] = Parents();
-		}
-		if (!parents[tuplePtr].count(trans.GetSymbol()))
-		{
-			parents[tuplePtr][trans.GetSymbol()] = std::unordered_set<StateType>();
-		}
-	
-		parents[tuplePtr][trans.GetSymbol()].insert(trans.GetParent());
-    }
-    while(prevSim != sim)
-    {
-		for (size_t i = 0; i < sim.size(); ++i)
-		{
-			for (size_t j = 0; j < sim.size(); ++j)
+			const RankType& rank = rankToLstate.first;
+			for (const auto& lstateToRstate : rankToLstate.second)
 			{
-				prevSim.set(i,j,sim.get(i,j));
+				const StateType& q = lstateToRstate.first;
+				for (const auto& rstateToCounter : lstateToRstate.second)
+				{
+					const StateType& p = rstateToCounter.first;
+					const size_t& count = rstateToCounter.second;
+					if (count == card[q][a][rank])
+					{
+						for (const StateType& l : reverse[p][a])
+						{
+							if (sim.get(l,q))
+							{
+								sim.set(l,q,false);
+							}
+						}
+					}
+				}
 			}
 		}
+	}
 
-        for(const auto& arity_pair : container)
-        {
-            for(const auto& q : arity_pair.second)
-            {
-                auto tmp = std::unordered_set<StateType>();
-                for(const auto& r : arity_pair.second)
-                {
-                    if (q.first != r.first) // symbols differ
-                    {
-                        continue;
-                    }
-
-					if (!areTuplesSimulated(*q.second, *r.second, sim))
-					{
-						continue;
-					}
-
-                    tmp.insert(parents[r.second][q.first].begin(), parents[r.second][q.first].end());
-                }
-            }
-        }
-    }
-	*/
+	sim.resizeRel(stateNumber-1);
 	return sim;
 }
 

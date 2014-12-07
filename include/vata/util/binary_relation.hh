@@ -892,6 +892,11 @@ public:   // methods
 		return rel_.size();
 	}
 
+	void resizeRel(size_t size, bool defVal = false)
+	{
+		rel_.resize(size, defVal);
+	}
+
 	/**
 	 * @brief  Restricts the relation to its symmetric fragment
 	 */
