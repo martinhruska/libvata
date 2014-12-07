@@ -162,7 +162,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			sp.SetNumStates(states);
 			if (bdd_spec_sim)
 			{
-				sp.SetBddAlg(true);
+				sp.SetBddAlg();
 			}
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
@@ -174,7 +174,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			sp.SetNumStates(states);
 			if (bdd_spec_sim)
 			{
-				sp.SetBddAlg(true);
+				sp.SetBddAlg();
 			}
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
@@ -254,7 +254,11 @@ VATA::AutBase::StateDiscontBinaryRelation ComputeSimulation(
 
 	if (options["bdd"] == "spec")
 	{
-		sp.SetBddAlg(true);
+		sp.SetBddAlg();
+	}
+	else if (options["bdd"] == "spec1")
+	{
+		sp.SetBddAlgEfficient();
 	}
 
 	return aut.ComputeSimulation(sp);
