@@ -12,6 +12,11 @@ typedef StateDiscontBinaryRelation Sim;
 
 typedef size_t RankType;
 
+typedef std::unordered_set<RankType> RankSet;
+typedef std::unordered_map<SymbolType, RankSet> SymbolSet;
+typedef std::unordered_set<SymbolType> PureSymbolSet;
+typedef std::unordered_set<StateType> StateSet;
+
 // State positions
 typedef size_t Position;
 typedef std::unordered_set<Position> Positions;
@@ -19,6 +24,8 @@ typedef std::unordered_map<StateType, Positions> ParentToPos;
 typedef std::unordered_map<SymbolType, ParentToPos> SymToPos;
 typedef std::unordered_map<StateType, SymToPos> StatePos;
 
+// State to symbols
+typedef std::unordered_map<StateType, PureSymbolSet> StateToSyms;
 
 // Reverse trans
 typedef std::unordered_set<StateType> ParentsReverse;
@@ -39,10 +46,6 @@ typedef std::unordered_map<SymbolType, RankToCounter> Counter;
 // Queue
 typedef std::pair<StateType, StateType> QueueItem;
 typedef std::vector<QueueItem> Queue;
-
-typedef std::unordered_set<RankType> RankSet;
-typedef std::unordered_map<StateType, RankSet> SymbolSet;
-typedef std::unordered_set<StateType> StateSet;
 
 namespace {
 
@@ -95,68 +98,24 @@ void addValueToHash(Hash& hash, const ValueType& value, const Key& key)
 	}
 }
 
-void initCounter(
-		Counter& counter,
-		const StateSet& stateSet,
-		const SymbolSet& symbolSet)
+template<class SetType>
+bool areSetsEqual(const SetType& lhs, const SetType rhs)
 {
-	for (const auto& symbolToRanks : symbolSet)
+	if (lhs.size() != rhs.size())
 	{
-		const SymbolType& symbol = symbolToRanks.first; 
-		addKeyToHash<RankToCounter>(counter, symbol);
-
-		for (const auto& rank : symbolToRanks.second)
-		{
-			addKeyToHash<LStateToCounter>(counter[symbol], rank);
-			for (const auto& lstate : stateSet)
-			{
-				addKeyToHash<RStateToCounter>(counter[symbol][rank], lstate);
-				for (const auto& rstate : stateSet)
-				{
-					addValueToHash(counter[symbol][rank][lstate], 0, rstate);
-				}
-			}
-		}
+		return false;
 	}
-}
 
-void initQueueAndSim(
-		Queue& queue,
-		Sim&   sim,
-		const StateSet& finals,
-		const StateSet& all)
-{
-	for (const StateType& fstate : finals)
+	for (const auto& litem : lhs)
 	{
-		for (const StateType state : all)
+		if (!rhs.count(litem))
 		{
-			if (finals.count(state))
-			{
-				continue;
-			}
-
-			queue.push_back(QueueItem(fstate, state));
-			sim.set(fstate, state, false);
-		}
-	}
-}
-
-bool isSimBreak(const Positions& qpos, const ParentToPos& pPos)
-{
-	for(const Position& pos : qpos)
-	{
-		for (const auto& symToPos : pPos)
-		{
-			if (symToPos.second.count(pos))
-			{
-				return true;
-			}
+			return false;
 		}
 	}
 
-	return false;
+	return true;
 }
-
 
 void addCard(
 		Card& card,
@@ -194,6 +153,103 @@ void addPositions(
 	positions[state][symbol][parent].insert(pos);
 }
 
+
+void addStateToSym(
+		StateToSyms& stateToSyms,
+		const StateType& state,
+		const SymbolType& symbol)
+{
+	addKeyToHash<PureSymbolSet>(stateToSyms, state);
+	stateToSyms[state].insert(symbol);
+}
+
+void initQueueAndSim(
+		Queue& queue,
+		Sim&   sim,
+		const StateSet& finals,
+		const StateSet& all)
+{
+	for (const StateType& fstate : finals)
+	{
+		for (const StateType state : all)
+		{
+			if (finals.count(state))
+			{
+				continue;
+			}
+
+			queue.push_back(QueueItem(fstate, state));
+			sim.set(fstate, state, false);
+		}
+	}
+}
+
+void initCounter(
+		Counter& counter,
+		const StateSet& stateSet,
+		const SymbolSet& symbolSet)
+{
+	for (const auto& symbolToRanks : symbolSet)
+	{
+		const SymbolType& symbol = symbolToRanks.first; 
+		addKeyToHash<RankToCounter>(counter, symbol);
+
+		for (const auto& rank : symbolToRanks.second)
+		{
+			addKeyToHash<LStateToCounter>(counter[symbol], rank);
+			for (const auto& lstate : stateSet)
+			{
+				addKeyToHash<RStateToCounter>(counter[symbol][rank], lstate);
+				for (const auto& rstate : stateSet)
+				{
+					addValueToHash(counter[symbol][rank][lstate], 0, rstate);
+				}
+			}
+		}
+	}
+}
+
+void symbolsCheck(
+		Queue& queue,
+		Sim&   sim,
+		const StateSet& all,
+		const StateToSyms& stateToSyms)
+{
+	for (const StateType& lstate : all)
+	{
+		for (const StateType rstate : all)
+		{
+			if (!sim.get(lstate, rstate))
+			{
+				continue;
+			}
+
+			if ((stateToSyms.count(lstate) != stateToSyms.count(rstate)) ||
+					(stateToSyms.count(lstate) && !areSetsEqual(stateToSyms.at(lstate), stateToSyms.at(rstate))))
+			{
+				queue.push_back(QueueItem(lstate, rstate));
+				sim.set(lstate, rstate, false);
+			}
+		}
+	}
+}
+
+bool isSimBreak(const Positions& qpos, const ParentToPos& pPos)
+{
+	for(const Position& pos : qpos)
+	{
+		for (const auto& symToPos : pPos)
+		{
+			if (symToPos.second.count(pos))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 }
 
 VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEfficient::ComputeSimulation(
@@ -205,6 +261,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	SymbolSet symbolSet;
 	ReverseTrans reverse;
 	StatePos positions;
+	StateToSyms stateToSyms;
 	std::vector<ExplicitTreeAutCore::Transition> leafTrans;
 
     for (const auto& trans: aut)
@@ -212,6 +269,8 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		const SymbolType& symbol = trans.GetSymbol();
 		const StateType& parent = trans.GetParent();
 		const RankType& rank = trans.GetChildren().size();
+
+		addStateToSym(stateToSyms, parent, symbol);
 
 		addCard(card, parent, symbol, rank);
 		card[parent][symbol][rank] += 1;
@@ -250,10 +309,12 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	initCounter(counter, stateSet, symbolSet);
 	
 	const size_t stateNumber = stateSet.size();
-    Sim sim(stateNumber, true, stateNumber-1);
+    Sim sim(stateNumber, true, stateNumber);
 	initRel(sim, true, stateNumber);
 	Queue queue;
 	initQueueAndSim(queue, sim, aut.GetFinalStates(), stateSet);
+	
+	symbolsCheck(queue, sim, stateSet, stateToSyms);
 
 	while (queue.size())
 	{
@@ -279,7 +340,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 					{
 						for (const StateType& l : reverse[p][a])
 						{
-							if (sim.get(l,k))
+							if (l != k && sim.get(l,k))
 							{
 								sim.set(l,k,false);
 								queue.push_back(QueueItem(l,k));
@@ -308,7 +369,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 					{
 						for (const StateType& l : reverse[p][a])
 						{
-							if (sim.get(l,q))
+							if (l != q && sim.get(l,q))
 							{
 								sim.set(l,q,false);
 							}
@@ -319,7 +380,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		}
 	}
 
-	sim.resizeRel(stateNumber-1);
+	sim.resizeRel(stateNumber-(stateSet.size() - mock));
 	return sim;
 }
 
