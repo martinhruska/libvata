@@ -49,9 +49,11 @@ include_directories(../../include)
 
 add_library(bddTDSimCore
 	bdd_td_tree_aut_sim_computer.cc
+	bdd_td_tree_aut_sim_efficient.cc
 	bdd_td_tree_aut_sim_expl.cc)
 
 set_source_files_properties(
 	bdd_td_tree_aut_sim_expl.cc
 	bdd_td_tree_aut_sim_computer.cc
+	bdd_td_tree_aut_sim_efficient.cc
 	PROPERTIES COMPILE_FLAGS ${vata_cxx_compiler_flags})
