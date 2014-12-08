@@ -23,8 +23,7 @@ public:
 
 public:
     static StateDiscontBinaryRelation ComputeSimulation(
-            const ExplicitTreeAutCore& aut
-    );
+            const ExplicitTreeAutCore& aut);
 };
 
 #endif

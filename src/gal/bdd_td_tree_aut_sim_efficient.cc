@@ -6,6 +6,8 @@
 #include "../explicit_tree_aut_core.hh"
 #include <vata/aut_base.hh>
 
+#include <vector>
+
 using namespace VATA::EfficientTypes;
 using namespace VATA::EfficientTypesFunctor;
 
@@ -21,27 +23,6 @@ void initRel(
 		for (size_t j = 0; j < size; ++j)
 		{
 			rel.set(i,j,defval);
-		}
-	}
-}
-
-void initQueueAndSim(
-		Queue& queue,
-		Sim&   sim,
-		const StateSet& finals,
-		const StateSet& all)
-{
-	for (const StateType& fstate : finals)
-	{
-		for (const StateType state : all)
-		{
-			if (finals.count(state))
-			{
-				continue;
-			}
-
-			queue.push_back(QueueItem(fstate, state));
-			sim.set(fstate, state, false);
 		}
 	}
 }
@@ -97,10 +78,11 @@ bool areSymbolsSubsetEq(
 	return true;
 }
 
-void symbolsCheck(
+void initQueueAndSim(
 		Queue& queue,
 		Sim&   sim,
 		const StateSet& all,
+		const StateSet& finals,
 		const StateToSyms& stateToSyms)
 {
 	for (const StateType& lstate : all)
@@ -114,6 +96,12 @@ void symbolsCheck(
 
 			if ((stateToSyms.count(lstate) != stateToSyms.count(rstate)) ||
 					(stateToSyms.count(lstate) && !areSymbolsSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
+			{
+				queue.push_back(QueueItem(lstate, rstate));
+				sim.set(lstate, rstate, false);
+			}
+
+			if (finals.count(lstate) && !finals.count(rstate))
 			{
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
@@ -200,9 +188,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
     Sim sim(stateNumber, true, stateNumber);
 	initRel(sim, true, stateNumber);
 	Queue queue;
-	initQueueAndSim(queue, sim, aut.GetFinalStates(), stateSet);
-	
-	symbolsCheck(queue, sim, stateSet, stateToSyms);
+	initQueueAndSim(queue, sim, stateSet, aut.GetFinalStates(), stateToSyms);
 
 	while (queue.size())
 	{

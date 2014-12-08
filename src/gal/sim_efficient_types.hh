@@ -6,6 +6,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <deque>
+#include <vector>
+
 namespace VATA
 {
 	namespace Util
