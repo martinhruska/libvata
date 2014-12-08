@@ -29,17 +29,17 @@ void initRel(
 
 void initCounter(
 		Counter& counter,
-		const StateSet& stateSet,
+		const size_t& stateNumber,
 		const SymbolSet& symbolSet)
 {
 	for (const auto& symbolToRanks : symbolSet)
 	{
 		const SymbolType& symbol = symbolToRanks.first; 
-		addKeyToHash<RankToCounter>(counter, symbol);
+		addSymbolToCounter(counter, symbol);
 
 		for (const auto& rank : symbolToRanks.second)
 		{
-			counter[symbol][rank] = Matrix(stateSet.size(), RowType(stateSet.size(), 0));	
+			addMatrixToCounter(counter, symbol, rank,  stateNumber);
 		}
 	}
 }
@@ -174,7 +174,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	}
 
 	Counter counter;
-	initCounter(counter, stateSet, symbolSet);
+	initCounter(counter, stateSet.size(), symbolSet);
 	
 	const size_t stateNumber = stateSet.size();
     Sim sim(stateNumber, true, stateNumber);

@@ -30,6 +30,8 @@ namespace VATA
 		typedef std::unordered_set<RankType> RankSet;
 		typedef std::unordered_map<SymbolType, RankSet> SymbolSet;
 		typedef std::unordered_set<StateType> StateSet;
+		typedef std::vector<size_t> RowType;
+		typedef std::vector<RowType> Matrix;
 
 		// State positions
 		typedef size_t Position;
@@ -54,8 +56,6 @@ namespace VATA
 		typedef std::unordered_map<StateType, SymToCard> Card;
 
 		// Counter
-		typedef std::vector<size_t> RowType;
-		typedef std::vector<RowType> Matrix;
 		typedef std::unordered_map<RankType, Matrix> RankToCounter;
 		typedef std::unordered_map<SymbolType, RankToCounter> Counter;
 

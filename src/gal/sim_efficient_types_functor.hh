@@ -129,6 +129,22 @@ namespace VATA
 			addKeyToHash<PureSymbolSet>(stateToSyms[state], rank);
 			stateToSyms[state][rank].insert(symbol);
 		}
+
+		void addSymbolToCounter(
+				Counter& counter,
+				const SymbolType& symbol)
+		{
+			addKeyToHash<RankToCounter>(counter, symbol);
+		}
+
+		void addMatrixToCounter(
+				Counter& counter,
+				const SymbolType& symbol,
+				const RankType& rank,
+				const size_t stateNumber)
+		{
+			counter[symbol][rank] = Matrix(stateNumber, RowType(stateNumber, 0));
+		}
 	}
 }
 
