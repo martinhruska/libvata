@@ -86,11 +86,12 @@ void initQueueAndSim(
 				continue;
 			}
 
-			if ((stateToSyms.count(lstate) != stateToSyms.count(rstate)) ||
+			if ((stateToSyms.count(lstate) && !stateToSyms.count(rstate)) ||
 					(stateToSyms.count(lstate) && !areSymbolsSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
 			{
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
+				continue;
 			}
 
 			if (finals.count(lstate) && !finals.count(rstate))
