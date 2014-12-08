@@ -71,6 +71,32 @@ void initCounter(
 	}
 }
 
+bool areSymbolsSubsetEq(
+		const RankToSymbols& lRankToSymbols,
+		const RankToSymbols& rRankToSymbols)
+{
+	if (lRankToSymbols.size() > rRankToSymbols.size())
+	{
+		return false;
+	}
+
+	for(const auto& lRankToSym : lRankToSymbols)
+	{
+		const size_t lrank = lRankToSym.first;
+		if (!rRankToSymbols.count(lrank))
+		{
+			return false;
+		}
+
+		if (!isSubsetEq(lRankToSym.second, rRankToSymbols.at(lrank)))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void symbolsCheck(
 		Queue& queue,
 		Sim&   sim,
@@ -87,7 +113,7 @@ void symbolsCheck(
 			}
 
 			if ((stateToSyms.count(lstate) != stateToSyms.count(rstate)) ||
-					(stateToSyms.count(lstate) && !isSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
+					(stateToSyms.count(lstate) && !areSymbolsSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
 			{
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
@@ -132,7 +158,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		const StateType& parent = trans.GetParent();
 		const RankType& rank = trans.GetChildren().size();
 
-		addStateToSym(stateToSyms, parent, symbol);
+		addStateToSym(stateToSyms, parent, rank, symbol);
 
 		addCard(card, parent, symbol, rank);
 		card[parent][symbol][rank] += 1;

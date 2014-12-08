@@ -122,10 +122,12 @@ namespace VATA
 		void addStateToSym(
 				StateToSyms& stateToSyms,
 				const StateType& state,
+				const RankType&  rank,
 				const SymbolType& symbol)
 		{
-			addKeyToHash<PureSymbolSet>(stateToSyms, state);
-			stateToSyms[state].insert(symbol);
+			addKeyToHash<RankToSymbols>(stateToSyms, state);
+			addKeyToHash<PureSymbolSet>(stateToSyms[state], rank);
+			stateToSyms[state][rank].insert(symbol);
 		}
 	}
 }

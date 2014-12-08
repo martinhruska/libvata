@@ -26,7 +26,6 @@ namespace VATA
 
 		typedef std::unordered_set<RankType> RankSet;
 		typedef std::unordered_map<SymbolType, RankSet> SymbolSet;
-		typedef std::unordered_set<SymbolType> PureSymbolSet;
 		typedef std::unordered_set<StateType> StateSet;
 
 		// State positions
@@ -37,7 +36,9 @@ namespace VATA
 		typedef std::unordered_map<StateType, SymToPos> StatePos;
 
 		// State to symbols
-		typedef std::unordered_map<StateType, PureSymbolSet> StateToSyms;
+		typedef std::unordered_set<SymbolType> PureSymbolSet;
+		typedef std::unordered_map<RankType, PureSymbolSet> RankToSymbols;
+		typedef std::unordered_map<StateType, RankToSymbols> StateToSyms;
 
 		// Reverse trans
 		typedef std::unordered_set<StateType> ParentsReverse;
