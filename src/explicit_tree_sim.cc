@@ -15,6 +15,9 @@
 #include "explicit_tree_aut_core.hh"
 #include "explicit_tree_transl.hh"
 
+#include "gal/bdd_td_tree_aut_sim_computer.hh"
+#include "gal/bdd_td_tree_aut_sim_efficient.hh"
+
 using VATA::AutBase;
 using VATA::ExplicitTreeAutCore;
 
@@ -82,6 +85,14 @@ StateDiscontBinaryRelation ExplicitTreeAutCore::ComputeDownwardSimulation(
 	assert(SimParam::e_sim_relation::TA_DOWNWARD == params.GetRelation());
 	if (params.GetNumStates() != static_cast<size_t>(-1))
 	{
+		if (params.IsBddAlg())
+		{
+			return BDDTopDownSimComputer::ComputeSimulation(*this);
+		}
+		else if (params.ISBddAlgEfficient())
+		{
+			return BDDTopDownSimEfficient::ComputeSimulation(*this);
+		}
 		return this->ComputeDownwardSimulation(params.GetNumStates());
 	}
 	else
