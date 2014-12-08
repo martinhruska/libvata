@@ -138,7 +138,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	ReverseTrans reverse;
 	StatePos positions;
 	StateToSyms stateToSyms;
-	std::vector<ExplicitTreeAutCore::Transition> leafTrans;
+	std::vector<const ExplicitTreeAutCore::Transition*> leafTrans;
 
     for (const auto& trans: aut)
     {
@@ -163,7 +163,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		}
 		if (children.size() == 0)
 		{
-			leafTrans.push_back(trans);
+			leafTrans.push_back(&trans);
 		}
 
 		addKeyToHash<RankSet>(symbolSet, symbol);
@@ -173,8 +173,8 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	const StateType mock = stateSet.size();
 	for (const auto& trans : leafTrans)
 	{
-		const SymbolType& symbol = trans.GetSymbol();
-		const StateType& parent = trans.GetParent();
+		const SymbolType& symbol = trans->GetSymbol();
+		const StateType& parent = trans->GetParent();
 
 		stateSet.insert(mock);
 		addReverse(reverse, parent, mock, symbol);
