@@ -38,9 +38,13 @@ def execute_inclusion(type, a1, a2):
 
 def test_inclusion(automata, combinatorics):
     for a1, a2 in combinatoric_functions[combinatorics](automata):
-        sim_res, sim_time = execute_inclusion('sim', a1, a2)
-        nosim_res, nosim_time = execute_inclusion('nosim', a1, a2)
-        sim1_res, sim1_time = execute_inclusion('sim1', a1, a2)
+        try:
+            sim_res, sim_time = execute_inclusion('sim', a1, a2)
+            nosim_res, nosim_time = execute_inclusion('nosim', a1, a2)
+            sim1_res, sim1_time = execute_inclusion('sim1', a1, a2)
+        except ValueError:
+            print("One the following automata is not well formated ", a1, a2)
+            continue
         if not(sim_res == sim1_res == nosim_res) and not None in (sim_res, sim1_res, nosim_res):
             raise Exception('Result of inclusion not equal, sim: {}, sim1: {},  nosim: {}, files {}, {}'.format(sim_res, sim1_res, nosim_res, a1, a2))
         record = RunRecord(a1, a2, sim_res, sim1_res, nosim_res, num_states[a1] + num_states[a2], sim_time, sim1_time, nosim_time)
