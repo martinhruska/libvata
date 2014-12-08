@@ -54,9 +54,9 @@ namespace VATA
 		typedef std::unordered_map<StateType, SymToCard> Card;
 
 		// Counter
-		typedef std::unordered_map<StateType, size_t> RStateToCounter;
-		typedef std::unordered_map<StateType, RStateToCounter> LStateToCounter;
-		typedef std::unordered_map<RankType, LStateToCounter> RankToCounter;
+		typedef std::vector<size_t> RowType;
+		typedef std::vector<RowType> Matrix;
+		typedef std::unordered_map<RankType, Matrix> RankToCounter;
 		typedef std::unordered_map<SymbolType, RankToCounter> Counter;
 
 		// Queue

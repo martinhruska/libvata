@@ -39,15 +39,7 @@ void initCounter(
 
 		for (const auto& rank : symbolToRanks.second)
 		{
-			addKeyToHash<LStateToCounter>(counter[symbol], rank);
-			for (const auto& lstate : stateSet)
-			{
-				addKeyToHash<RStateToCounter>(counter[symbol][rank], lstate);
-				for (const auto& rstate : stateSet)
-				{
-					addValueToHash(counter[symbol][rank][lstate], 0, rstate);
-				}
-			}
+			counter[symbol][rank] = Matrix(stateSet.size(), RowType(stateSet.size(), 0));	
 		}
 	}
 }
