@@ -1,51 +1,13 @@
 #include "bdd_td_tree_aut_sim_efficient.hh"
 
+#include "sim_efficient_types.hh"
+#include "sim_efficient_types_functor.hh"
+
 #include "../explicit_tree_aut_core.hh"
 #include <vata/aut_base.hh>
 
-typedef VATA::ExplicitTreeAutCore::SymbolType SymbolType;
-typedef VATA::ExplicitTreeAutCore::StateType  StateType;
-typedef VATA::ExplicitTreeAutCore::StateTuple StateTuple;
-typedef VATA::ExplicitTreeAutCore::TuplePtr   TuplePtr;
-typedef VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation StateDiscontBinaryRelation;
-typedef StateDiscontBinaryRelation Sim;
-
-typedef size_t RankType;
-
-typedef std::unordered_set<RankType> RankSet;
-typedef std::unordered_map<SymbolType, RankSet> SymbolSet;
-typedef std::unordered_set<SymbolType> PureSymbolSet;
-typedef std::unordered_set<StateType> StateSet;
-
-// State positions
-typedef size_t Position;
-typedef std::unordered_set<Position> Positions;
-typedef std::unordered_map<StateType, Positions> ParentToPos;
-typedef std::unordered_map<SymbolType, ParentToPos> SymToPos;
-typedef std::unordered_map<StateType, SymToPos> StatePos;
-
-// State to symbols
-typedef std::unordered_map<StateType, PureSymbolSet> StateToSyms;
-
-// Reverse trans
-typedef std::unordered_set<StateType> ParentsReverse;
-typedef std::unordered_map<SymbolType, ParentsReverse> SymToParents;
-typedef std::unordered_map<StateType, SymToParents> ReverseTrans;
-
-// Cardinality
-typedef std::unordered_map<RankType, size_t> RankToCard;
-typedef std::unordered_map<SymbolType, RankToCard> SymToCard;
-typedef std::unordered_map<StateType, SymToCard> Card;
-
-// Counter
-typedef std::unordered_map<StateType, size_t> RStateToCounter;
-typedef std::unordered_map<StateType, RStateToCounter> LStateToCounter;
-typedef std::unordered_map<RankType, LStateToCounter> RankToCounter;
-typedef std::unordered_map<SymbolType, RankToCounter> Counter;
-
-// Queue
-typedef std::pair<StateType, StateType> QueueItem;
-typedef std::vector<QueueItem> Queue;
+using namespace VATA::EfficientTypes;
+using namespace VATA::EfficientTypesFunctor;
 
 namespace {
 
@@ -61,106 +23,6 @@ void initRel(
 			rel.set(i,j,defval);
 		}
 	}
-}
-
-bool areTuplesSimulated(
-	const StateTuple&                 lhs,
-	const StateTuple&                 rhs,
-	const StateDiscontBinaryRelation& sim)
-{
-	assert(lhs.size() == rhs.size());
-	for (size_t i = 0; i < lhs.size(); ++i)
-	{
-		if (!sim.get(lhs.at(i), rhs.at(i)))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-template<class ValueType, class Key, class Hash>
-void addKeyToHash(Hash& hash, const Key& key)
-{
-	if (!hash.count(key))
-	{
-		hash[key] = ValueType();
-	}
-}
-
-template<class ValueType, class Key, class Hash>
-void addValueToHash(Hash& hash, const ValueType& value, const Key& key)
-{
-	if (!hash.count(key))
-	{
-		hash[key] = value;
-	}
-}
-
-template<class SetType>
-bool areSetsEqual(const SetType& lhs, const SetType rhs)
-{
-	if (lhs.size() != rhs.size())
-	{
-		return false;
-	}
-
-	for (const auto& litem : lhs)
-	{
-		if (!rhs.count(litem))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-void addCard(
-		Card& card,
-		const StateType& parent,
-		const SymbolType& symbol,
-		const RankType&  rank)
-{
-	addKeyToHash<SymToCard>(card, parent);
-	addKeyToHash<RankToCard>(card[parent], symbol);
-	addValueToHash(card[parent][symbol], 0, rank);
-}
-
-void addReverse(
-		ReverseTrans& reverse,
-		const StateType& parent,
-		const StateType& state,
-		const SymbolType& symbol)
-{
-	addKeyToHash<SymToParents>(reverse, state);
-	addKeyToHash<ParentsReverse>(reverse[state], symbol);
-	reverse[state][symbol].insert(parent);
-}
-
-
-void addPositions(
-		StatePos& positions,
-		const StateType& parent,
-		const StateType& state,
-		const SymbolType& symbol,
-		const Position pos)
-{
-	addKeyToHash<SymToPos>(positions, state);
-	addKeyToHash<ParentToPos>(positions[state], symbol);
-	addKeyToHash<Positions>(positions[state][symbol], parent);
-	positions[state][symbol][parent].insert(pos);
-}
-
-
-void addStateToSym(
-		StateToSyms& stateToSyms,
-		const StateType& state,
-		const SymbolType& symbol)
-{
-	addKeyToHash<PureSymbolSet>(stateToSyms, state);
-	stateToSyms[state].insert(symbol);
 }
 
 void initQueueAndSim(
@@ -225,7 +87,7 @@ void symbolsCheck(
 			}
 
 			if ((stateToSyms.count(lstate) != stateToSyms.count(rstate)) ||
-					(stateToSyms.count(lstate) && !areSetsEqual(stateToSyms.at(lstate), stateToSyms.at(rstate))))
+					(stateToSyms.count(lstate) && !isSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
 			{
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
@@ -344,34 +206,6 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 							{
 								sim.set(l,k,false);
 								queue.push_back(QueueItem(l,k));
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	for (const auto& symToRank : counter)
-	{
-		const SymbolType& a = symToRank.first;
-		for (const auto& rankToLstate : symToRank.second)
-		{
-			const RankType& rank = rankToLstate.first;
-			for (const auto& lstateToRstate : rankToLstate.second)
-			{
-				const StateType& q = lstateToRstate.first;
-				for (const auto& rstateToCounter : lstateToRstate.second)
-				{
-					const StateType& p = rstateToCounter.first;
-					const size_t& count = rstateToCounter.second;
-					if (count == card[q][a][rank])
-					{
-						for (const StateType& l : reverse[p][a])
-						{
-							if (l != q && sim.get(l,q))
-							{
-								sim.set(l,q,false);
 							}
 						}
 					}
