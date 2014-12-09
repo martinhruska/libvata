@@ -54,7 +54,7 @@ bool areSymbolsSubsetEq(
 	}
 
 	for(const auto& lRankToSym : lRankToSymbols)
-	{
+	{ // Go through all ranks
 		const size_t lrank = lRankToSym.first;
 		if (!rRankToSymbols.count(lrank))
 		{
@@ -88,14 +88,14 @@ void initQueueAndSim(
 
 			if ((stateToSyms.count(lstate) && !stateToSyms.count(rstate)) ||
 					(stateToSyms.count(lstate) && !areSymbolsSubsetEq(stateToSyms.at(lstate), stateToSyms.at(rstate))))
-			{
+			{ // remove those ones which has not same symbols in their transition
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
 				continue;
 			}
 
 			if (finals.count(lstate) && !finals.count(rstate))
-			{
+			{ // remove final and non final combination
 				queue.push_back(QueueItem(lstate, rstate));
 				sim.set(lstate, rstate, false);
 			}
@@ -103,6 +103,10 @@ void initQueueAndSim(
 	}
 }
 
+/**
+ * Check whether there is tuple q_i and also tuple with p_i so whether
+ * q_i not simulated by p_i broke anything
+ */
 bool isSimBreak(const Positions& qpos, const ParentToPos& pPos)
 {
 	for(const Position& pos : qpos)
@@ -134,7 +138,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	std::vector<ExplicitTreeAutCore::Transition> leafTrans;
 
     for (const auto& trans: aut)
-    {
+    { // init reverse, positions, stateToSyms structures
 		const SymbolType& symbol = trans.GetSymbol();
 		const StateType& parent = trans.GetParent();
 		const RankType& rank = trans.GetChildren().size();
@@ -184,7 +188,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 	initQueueAndSim(queue, sim, stateSet, aut.GetFinalStates(), stateToSyms);
 
 	while (queue.size())
-	{
+	{ // gradually sim refinment
 		const QueueItem item = queue.back();
 		const StateType p = item.first;
 		const StateType q = item.second;
@@ -199,12 +203,12 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 				for (const StateType& k : reverse[q][a])
 				{
 					if (isSimBreak(positions[q][a][k], positions[p][a]))
-					{
+					{ // check for tuples with q and p on same indicies
 						counter[a][rank][k][p] += 1;
 					}
 
 					if (counter[a][rank][k][p] == card[k][a][rank])
-					{
+					{ // no way how to get to k from q over a
 						for (const StateType& l : reverse[p][a])
 						{
 							if (l != k && sim.get(l,k))
@@ -219,6 +223,7 @@ VATA::BDDTopDownSimEfficient::StateDiscontBinaryRelation VATA::BDDTopDownSimEffi
 		}
 	}
 
+	// remove mock state row and column from sim
 	sim.resizeRel(stateNumber-(stateSet.size() - mock));
 	return sim;
 }

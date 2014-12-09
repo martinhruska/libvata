@@ -1,3 +1,16 @@
+/*****************************************************************************
+ *  VATA Tree Automata Library
+ *
+ *  Copyright (c) 2014 Martin Hruska, Petr Sebek <{xhrusk16, xsebek06}@fit.vutbr.cz>
+ *
+ *  Description:
+ *  Data types for BDDTopDownSimExpl class
+ *
+ *  Nothe:
+ *  Part of project for GAL lecture
+ *
+ *****************************************************************************/
+
 #ifndef _VATA_DATA_TYPES_HH_
 #define _VATA_DATA_TYPES_HH_
 
@@ -15,6 +28,10 @@ namespace VATA {
 	class TupleStore;
 }
 
+/**
+ * Class maps original symbols to a new one
+ * during BDDTopDown automata conversion to explicit one
+ */
 class VATA::SymbolTranslator :
 	public std::unordered_map<int, std::string>
 {
@@ -79,6 +96,10 @@ public:
 };
 
 
+/**
+ * Maps each state to a structure representing
+ * symbols used to in transition where the state is parent
+ */
 class VATA::StateToUsed : public std::unordered_map<
 						  VATA::BDDTopDownSimExpl::StateType,
 						  VATA::BDDTopDownSimExpl::UsedSymbols>
@@ -116,6 +137,9 @@ public:
 };
 
 
+/**
+ * Class mantains tuples and indicies to access them
+ */
 class VATA::TupleStore : public std::vector<VATA::BDDTopDownSimExpl::StateTuple>
 {
 private:

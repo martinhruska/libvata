@@ -134,7 +134,11 @@ namespace {
 }
 
 
-// Documentation in a header file
+/**
+ * Translates bdd top down automata to explicit representation
+ * @param[in]  aut BDD top down automata to be converted
+ * @param[out] explAut create explicit automaton
+ */
 void VATA::BDDTopDownSimExpl::loadUsedSymbols(
 		const BDDTDTreeAutCore&               aut,
 		VATA::StateToUsed&                    stateToUsed,

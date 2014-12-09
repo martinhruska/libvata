@@ -65,7 +65,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
     InverseTrans parents;
 
     for (const auto &trans: aut)
-    {
+    { // preprocessing to initialize needed structure
         const size_t arity = trans.GetChildren().size();
         if( container.count(arity) == 0)
         {
@@ -87,9 +87,9 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
     }
 
     while(prevSim != sim)
-    {
+    { // while sim is refined
 		for (size_t i = 0; i < sim.size(); ++i)
-		{
+		{ // copy new to old sim
 			for (size_t j = 0; j < sim.size(); ++j)
 			{
 				prevSim.set(i,j,sim.get(i,j));
@@ -99,7 +99,7 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
         for(const auto& arity_pair : container)
         {
             for(const auto& q : arity_pair.second)
-            {
+            { // go through all states
                 auto tmp = std::unordered_set<StateType>();
                 for(const auto& r : arity_pair.second)
                 {
@@ -122,7 +122,11 @@ VATA::BDDTopDownSimComputer::StateDiscontBinaryRelation VATA::BDDTopDownSimCompu
 	return sim;
 }
 
-
+/* 
+ * Refines simulation by removing all pair states (p,q)
+ * such that p is in lhs and q is in lhs,
+ * or p is final state but q is not final.
+ */
 void VATA::BDDTopDownSimComputer::simRefinement(
         StateDiscontBinaryRelation&       sim,
         const std::unordered_set<size_t>& lhs,

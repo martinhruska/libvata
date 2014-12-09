@@ -1,3 +1,16 @@
+/*****************************************************************************
+ *  VATA Tree Automata Library
+ *
+ *  Copyright (c) 2014 Martin Hruska, Petr Sebek <{xhrusk16, xsebek06}@fit.vutbr.cz>
+ *
+ *  Description:
+ *  Conversion of bdd td NTA to explicit NTA reducing number of used symbols.
+ *
+ *  Nothe:
+ *  Part of project for GAL lecture
+ *
+ *****************************************************************************/
+
 #ifndef _VATA_BDD_TD_SIM_EXPL_HH_
 #define _VATA_BDD_TD_SIM_EXPL_HH_
 
@@ -17,7 +30,11 @@ namespace VATA
 	
 template<class StateTupleSet, class StateType, class StateTuple>
 class CondColApplyFunctor;	
-		
+
+/*
+ * Class contains methods for conversion of BDD Top Down NTA to
+ * explicitly represented one
+ */
 class VATA::BDDTopDownSimExpl
 {
 	friend class StateToUsed;
@@ -39,11 +56,6 @@ public: // data types
 	
 public:
 
-	/**
-	 * Translates bdd top down automata to explicit representation
-	 * @param[in]  aut BDD top down automata to be converted
-	 * @param[out] explAut create explicit automaton
-	 */
 	static void Translate(
 			const BDDTDTreeAutCore&              aut,
 			ExplicitTreeAutCore&                 explAut);

@@ -1,3 +1,16 @@
+/*****************************************************************************
+ *  VATA Tree Automata Library
+ *
+ *  Copyright (c) 2014 Martin Hruska, Petr Sebek <{xhrusk16, xsebek06}@fit.vutbr.cz>
+ *
+ *  Description:
+ *  Data types used in BDDTopDownSimEfficient class
+ *
+ *  Nothe:
+ *  Part of project for GAL lecture
+ *
+ *****************************************************************************/
+
 #ifndef _VATA_SIM_EFFICIENT_TYPES_HH_
 #define _VATA_SIM_EFFICIENT_TYPES_HH_
 
@@ -18,6 +31,8 @@ namespace VATA
 
 	namespace EfficientTypes
 	{
+
+		// General types
 		typedef VATA::ExplicitTreeAutCore::SymbolType SymbolType;
 		typedef VATA::ExplicitTreeAutCore::StateType  StateType;
 		typedef VATA::ExplicitTreeAutCore::StateTuple StateTuple;

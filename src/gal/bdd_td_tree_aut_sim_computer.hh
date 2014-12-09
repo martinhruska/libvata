@@ -1,3 +1,17 @@
+/*****************************************************************************
+ *  VATA Tree Automata Library
+ *
+ *  Copyright (c) 2014 Martin Hruska, Petr Sebek <{xhrusk16, xsebek06}@fit.vutbr.cz>
+ *
+ *  Description:
+ *  Computing simulation using naive algorithm
+ *
+ *  Nothe:
+ *  Part of project for GAL lecture
+ *
+ *****************************************************************************/
+
+
 #ifndef _VATA_BDD_TD_SIM_COMPUTER_HH_
 #define _VATA_BDD_TD_SIM_COMPUTER_HH_
 
@@ -16,20 +30,26 @@ namespace VATA
 	}
 }
 
+/*
+ * Class containg method for computing simulation over NTA
+ */
 class VATA::BDDTopDownSimComputer
 {
-private:
-    //using StateDiscontBinaryRelation = VATA::AutBase::StateDiscontBinaryRelation;
-
 public:
     typedef Util::DiscontBinaryRelation StateDiscontBinaryRelation;
 
 public:
+	/*
+	 * Computes simulation over given automata using naive algorithm.
+	 * @param[in] aut NTA over which state is simulation computed
+	 * @return Simulation relation over states of aut
+	 */
     static StateDiscontBinaryRelation ComputeSimulation(
             const ExplicitTreeAutCore& aut
     );
 
 private:
+
 	static void simRefinement(
         StateDiscontBinaryRelation &sim,
         const std::unordered_set<size_t>& lhs,
