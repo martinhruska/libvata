@@ -15,7 +15,7 @@ cp -R src $TEMP/
 cp -R unit_tests $TEMP/
 cp -r documentation.pdf $TEMP
 mkdir $TEMP/tests
-cp -R tests/*sh tests/*awk tests/*in  tests/aut_timbuk_smaller tests/fa_timbuk_armc $TEMP"/tests/"
+cp -R tests/CMakeLists.txt tests/*sh tests/*awk tests/*in  tests/aut_timbuk_smaller tests/fa_timbuk_armc $TEMP"/tests/"
 
 tar -czf vata.tar.gz $TEMP
 
