@@ -13,8 +13,8 @@ do
     test_result=$(mktemp)
 
     build/cli/vata -r bdd-td -o bdd=spec sim $file > $correct_result
-    build/cli/vata -r expl sim $file > $test_result
-    python tests/vata_tests/compare_simulations.py $correct_result $test_result
+    build/cli/vata -r bdd-td -o bdd=spec1 sim $file > $test_result
+    python src/gal/compare_simulations.py $correct_result $test_result
     if [ $? -eq "0" ] ;
     then
         success=$(( success+1 ))

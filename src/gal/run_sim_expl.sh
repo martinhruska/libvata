@@ -1,3 +1,3 @@
 #! /bin/bash
 
-build/cli/vata -r expl sim $1
+build/cli/vata -r expl -t sim $1
