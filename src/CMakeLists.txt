@@ -21,6 +21,7 @@ set(basic_cxx_compiler_add_flags_list
   -Wctor-dtor-privacy
   -Weffc++
   -fPIC
+  -g
   -Woverloaded-virtual
 )
 
@@ -127,6 +128,8 @@ set_target_properties(libvata PROPERTIES
   CLEAN_DIRECT_OUTPUT 1
 )
 
+add_subdirectory(gal)
+target_link_libraries(libvata bddTDSimCore)
 
 set(scanner_parser_files
   ${FLEX_timbuk_scanner_OUTPUTS}

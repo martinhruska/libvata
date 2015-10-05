@@ -86,7 +86,7 @@ public:   // methods
 	}
 
 	TPtr find(
-		const T&                  x)
+		const T&                  x) const
 	{
 		auto i = store_.find(x);
 

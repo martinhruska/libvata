@@ -1,0 +1,15 @@
+Ops a:1 b:1 c:1 
+
+Automaton A0053
+
+States q1:0 q2:0 q3:0 q4:0 q:0 r:0 t:0
+
+Final States q
+
+Transitions
+a(r) -> q
+b(r) -> q
+d(r) -> q
+a(t) -> q
+c(t) -> q
+d(t) -> q

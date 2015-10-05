@@ -125,6 +125,16 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 	}
 	else { throw optErrorEx; }
 
+	SimParam::e_sim_spec bdd_spec_sim = static_cast<SimParam::e_sim_spec>(-1);
+	if (options["bdd"] == "spec")
+	{
+		bdd_spec_sim = SimParam::e_sim_spec::SPEC;
+	}
+	else if (options["bdd"] == "spec1")
+	{
+		bdd_spec_sim = SimParam::e_sim_spec::SPEC1;
+	}
+
 	/****************************************************************************
 	 *                            Additional handling
 	 ****************************************************************************/
@@ -154,6 +164,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_UPWARD);
 			sp.SetNumStates(states);
+			sp.SetBddAlg(bdd_spec_sim);
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
@@ -162,6 +173,7 @@ bool CheckInclusion(Automaton smaller, Automaton bigger, const Arguments& args)
 			SimParam sp;
 			sp.SetRelation(VATA::SimParam::e_sim_relation::TA_DOWNWARD);
 			sp.SetNumStates(states);
+			sp.SetBddAlg(bdd_spec_sim);
 			sim = unionAut.ComputeSimulation(sp);
 			ip.SetSimulation(&sim);
 		}
@@ -236,6 +248,15 @@ VATA::AutBase::StateDiscontBinaryRelation ComputeSimulation(
 	{
 		throw std::runtime_error("Invalid options for simulation: " +
 			Convert::ToString(options));
+	}
+
+	if (options["bdd"] == "spec")
+	{
+		sp.SetBddAlg();
+	}
+	else if (options["bdd"] == "spec1")
+	{
+		sp.SetBddAlgEfficient();
 	}
 
 	return aut.ComputeSimulation(sp);

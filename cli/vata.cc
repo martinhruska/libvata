@@ -68,6 +68,7 @@ const char VATA_USAGE_COMMANDS[] =
 	"    sim <file>              Computes a simulation relation for the automaton in <file>\n"
 	"      Options: tree automata: 'dir=down' : downward simulation (default)\n"
 	"                              'dir=up'   : upward simulation\n"
+	"                              'bdd=spec' : GAL algorithm for BDD simualtion\n"
 	"               finite automata: 'dir=fwd'  : forward simulation (default)\n"
 	"                                'dir=bwd'  : backward simulation\n"
 	"    red <file>   Reduces the automaton in <file> using simulation relation\n"

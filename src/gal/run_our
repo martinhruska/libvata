@@ -1,0 +1,1 @@
+build/cli/vata -r bdd-td -o bdd=spec sim src/gal/lukas_example

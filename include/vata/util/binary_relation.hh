@@ -838,6 +838,25 @@ public:   // methods
 		return os;
 	}
 
+    bool operator==(const DiscontBinaryRelation& rel) const 
+    {
+		assert(this->size() == rel.size());
+        for (size_t i = 0; i < rel.size(); ++i)
+        {
+            for(size_t j = 0; j < rel.size(); ++j)
+            {
+                if(this->get(i, j) != rel.get(i, j))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    bool operator!=(const DiscontBinaryRelation& rel) const
+    {
+        return !(this->operator==(rel));
+    }
+
 
 	/**
 	 * @brief  Creates a mapping from elements to their images
@@ -887,6 +906,11 @@ public:   // methods
 	size_t size() const
 	{
 		return rel_.size();
+	}
+
+	void resizeRel(size_t size, bool defVal = false)
+	{
+		rel_.resize(size, defVal);
 	}
 
 	/**

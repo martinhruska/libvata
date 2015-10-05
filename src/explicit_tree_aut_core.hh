@@ -633,6 +633,11 @@ public:   // methods
 		this->internalAddTransition(this->tupleLookup(children), symbol, parent);
 	}
 
+	TuplePtr FindTuplePtr(
+		const StateTuple&         tuple) const
+	{
+		return cache_.find(tuple);
+	}
 
 	bool ContainsTransition(
 		const StateTuple&         children,
@@ -799,6 +804,22 @@ public:   // methods
 				}
 			}
 		}
+	}
+
+	size_t GetStatesNumber() const
+	{
+		class Counter : public std::unordered_set<StateType>
+		{
+		public:
+			void operator()(StateType state)
+			{
+				this->insert(state);
+			}
+		};
+
+		Counter c;
+		BuildStateIndex(c);
+		return c.size();
 	}
 
 	template <class Index>

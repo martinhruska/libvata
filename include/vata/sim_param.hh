@@ -28,6 +28,13 @@ namespace VATA
 			FA_BACKWARD
 		};
 
+		enum class e_sim_spec
+		{
+			NO,
+			SPEC,
+			SPEC1
+		};
+
 	private:  // data members
 
 		/// the relation to be computed
@@ -41,6 +48,11 @@ namespace VATA
 		 * be recomputed. -1 denotes the @e unknown value.
 		 */
 		size_t numStates_ = static_cast<size_t>(-1);
+
+		/**
+		 * @brief Use of algorithm created in GAL lecture
+		 */
+		e_sim_spec bddAlg_ = static_cast<e_sim_spec>(-1);
 
 	public:   // methods
 
@@ -62,6 +74,31 @@ namespace VATA
 		size_t GetNumStates() const
 		{
 			return numStates_;
+		}
+
+		void SetBddAlg()
+		{
+			bddAlg_ = e_sim_spec::SPEC;
+		}
+		
+		void SetBddAlg(e_sim_spec val)
+		{
+			bddAlg_ = val;
+		}
+
+		void SetBddAlgEfficient()
+		{
+			bddAlg_ = e_sim_spec::SPEC1;
+		}
+
+		bool IsBddAlg() const
+		{
+			return bddAlg_ == e_sim_spec::SPEC;
+		}
+
+		bool ISBddAlgEfficient() const
+		{
+			return bddAlg_ == e_sim_spec::SPEC1;
 		}
 
 		std::string toString() const
@@ -93,6 +130,20 @@ namespace VATA
 				{
 					assert(false);     // fail gracefully
 				}
+			}
+			
+			result += ". Use GAL alg: ";
+			if (IsBddAlg())
+			{
+				result += "BDD Alg";
+			}
+			else if (ISBddAlgEfficient())
+			{
+				result += "BDD Alg efficient";
+			}
+			else
+			{
+				result += "No";
 			}
 
 			return result;
