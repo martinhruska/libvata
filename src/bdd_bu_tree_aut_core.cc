@@ -219,6 +219,54 @@ BDDTDTreeAutCore BDDBUTreeAutCore::GetTopDownAut() const
 	return result;
 }
 
+void BDDBUTreeAutCore::translateToExplicit(
+	ExplicitTreeAutCore&      explAut) const{
+
+	// copy final states
+	for (const StateType& fst : finalStates_)
+	{	// copy final states
+		explAut.SetStateFinal(fst);
+	}
+
+	std::unordered_map<std::string, size_t> symbolMap;
+	size_t symbolCnt = 0;
+
+	// copy states, transitions and symbols
+	for (auto tupleBddPair : this->GetTransTable())
+	{	// for all states
+		const StateTuple& children = tupleBddPair.first;
+
+		const TransMTBDD& transMtbdd = tupleBddPair.second;
+		TransMTBDD::SymVarToValueList paths = transMtbdd.GetPaths();
+
+		for (const std::pair<SymbolicVarAsgn, TransMTBDD::DataType> path : paths)
+		{
+			for (const StateType& state : path.second)
+			{
+				std::string symbolStr = path.first.ToString();
+
+				if (!symbolMap.count(symbolStr))
+				{
+					symbolMap[symbolStr] = symbolCnt;
+					++symbolCnt;
+				}
+
+				explAut.AddTransition(children,
+					symbolMap.at(symbolStr), state);
+			}
+		}
+	}
+
+	std::cerr << "States: " << explAut.GetStatesNumber() << "; Symbols: " << symbolCnt << "\n";
+}
+
+void BDDBUTreeAutCore::Reduce() const
+{
+	ExplicitTreeAutCore explAut;
+	this->translateToExplicit(explAut);
+	auto a = explAut.Reduce();
+	std::cerr << "Reduced states: " << a.GetStatesNumber() << "; Reduction to " << (a.GetStatesNumber()/(explAut.GetStatesNumber()/100)) << "% of original size"  << '\n';
+}
 
 std::string BDDBUTreeAutCore::DumpToDot() const
 {

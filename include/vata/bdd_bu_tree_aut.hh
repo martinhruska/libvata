@@ -245,10 +245,10 @@ public:   // methods
 	BDDTopDownTreeAut GetTopDownAut() const;
 
 
-	BDDBottomUpTreeAut Reduce() const
-	{
-		throw NotImplementedException(__func__);
-	}
+	BDDBottomUpTreeAut Reduce() const;
+	//{
+		//throw NotImplementedException(__func__);
+	//}
 
 
 	StateDiscontBinaryRelation ComputeSimulation(

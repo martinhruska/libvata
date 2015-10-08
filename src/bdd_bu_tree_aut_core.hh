@@ -25,6 +25,7 @@
 #include "util/bdd_bu_trans_table.hh"
 #include "util/cond_col.hh"
 #include "bdd_bu_tt_wrapper.hh"
+#include "explicit_tree_aut_core.hh"
 
 
 GCC_DIAG_OFF(effc++)
@@ -192,6 +193,10 @@ private:  // methods
 
 		return desc;
 	}
+
+
+	void translateToExplicit(
+		ExplicitTreeAutCore&      explAut) const;
 
 
 	template <
@@ -494,6 +499,8 @@ public:   // methods
 
 	StateDiscontBinaryRelation ComputeSimulation(
 		const SimParam&                 /* params */) const;
+
+	void Reduce() const;
 
 	StateBinaryRelation ComputeDownwardSimulation() const;
 

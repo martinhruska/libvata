@@ -222,6 +222,12 @@ BDDBottomUpTreeAut BDDBottomUpTreeAut::RemoveUnreachableStates(
 }
 
 
+BDDBottomUpTreeAut BDDBottomUpTreeAut::Reduce() const
+{
+	core_->Reduce();
+	return BDDBottomUpTreeAut();
+}
+
 StateDiscontBinaryRelation BDDBottomUpTreeAut::ComputeSimulation(
 	const SimParam&                 params) const
 {

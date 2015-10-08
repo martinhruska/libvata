@@ -243,7 +243,13 @@ public:   // methods
 StateDiscontBinaryRelation BDDBUTreeAutCore::ComputeSimulation(
 	const VATA::SimParam&                  /* params */) const
 {
-	assert(false);
+	ExplicitTreeAutCore explAut;
+	this->translateToExplicit(explAut);
+	auto simParam = VATA::SimParam();
+	simParam.SetRelation(VATA::SimParam::e_sim_relation::TA_UPWARD);
+	simParam.SetNumStates(explAut.GetStatesNumber());
+	return explAut.ComputeSimulation(simParam);
+
 	// switch (params.GetRelation())
 	// {
 	// 	case SimParam::e_sim_relation::TA_UPWARD:
