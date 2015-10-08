@@ -1163,6 +1163,8 @@ public:   // methods
 	ExplicitTreeAutCore Reduce(
 		const ReduceParam&            params) const;
 
+	ExplicitTreeAutCore Determinization() const;
+
 
 	template <
 		class SymbolTranslateF>

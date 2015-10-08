@@ -301,7 +301,12 @@ ExplicitTreeAutCore ExplicitTreeAutCore::Reduce(
 	 	std::unordered_map<StateType, StateType>
 	 > StateMap;
      */
-  
+
+	auto dta = this->Determinization();
+	std::cerr << "NFA states number: " << this->GetStatesNumber() << " DFA states number: " << dta.GetStatesNumber() << '\n';
+ 
+	return dta;
+
 	 using StateMap = std::unordered_map<StateType, StateType>;
   
 	 size_t stateCnt = 0;
