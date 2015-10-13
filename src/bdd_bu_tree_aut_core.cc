@@ -70,10 +70,10 @@ void BDDBUTreeAutCore::AddTransition(
 	}
 }
 
-
+template <class Index>
 BDDBUTreeAutCore::TransMTBDD BDDBUTreeAutCore::ReindexStates(
 	BDDBUTreeAutCore&          dstAut,
-	StateToStateTranslWeak&    stateTransl) const
+	Index&    stateTransl) const
 {
 	GCC_DIAG_OFF(effc++)    // suppress missing virtual destructor warning
 	class RewriteApplyFunctor :
@@ -83,11 +83,11 @@ BDDBUTreeAutCore::TransMTBDD BDDBUTreeAutCore::ReindexStates(
 	GCC_DIAG_ON(effc++)
 	private:  // data members
 
-		StateToStateTranslWeak& transl_;
+		Index& transl_;
 
 	public:   // methods
 
-		RewriteApplyFunctor(StateToStateTranslWeak& transl) :
+		RewriteApplyFunctor(Index& transl) :
 			transl_(transl)
 		{ }
 
@@ -97,7 +97,7 @@ BDDBUTreeAutCore::TransMTBDD BDDBUTreeAutCore::ReindexStates(
 
 			for (const StateType& state : value)
 			{ // for every state
-				result.insert(transl_(state));
+				result.insert(transl_[state]);
 			}
 
 			return result;
@@ -111,7 +111,7 @@ BDDBUTreeAutCore::TransMTBDD BDDBUTreeAutCore::ReindexStates(
 		StateTuple newTuple;
 		for (const StateType& state : oldTuple)
 		{
-			newTuple.push_back(stateTransl(state));
+			newTuple.push_back(stateTransl[state]);
 		}
 		assert(newTuple.size() == oldTuple.size());
 
@@ -120,7 +120,7 @@ BDDBUTreeAutCore::TransMTBDD BDDBUTreeAutCore::ReindexStates(
 
 	for (const StateType& fst : this->GetFinalStates())
 	{
-		dstAut.SetStateFinal(stateTransl(fst));
+		dstAut.SetStateFinal(stateTransl[fst]);
 	}
 
 	TransMTBDD nullaryBdd = rewriter(this->GetMtbdd(StateTuple()));
@@ -257,15 +257,49 @@ void BDDBUTreeAutCore::translateToExplicit(
 		}
 	}
 
-	std::cerr << "States: " << explAut.GetStatesNumber() << "; Symbols: " << symbolCnt << "\n";
+	//std::cerr << "States: " << explAut.GetStatesNumber() << "; Symbols: " << symbolCnt << "\n";
 }
 
-void BDDBUTreeAutCore::Reduce() const
+BDDBUTreeAutCore BDDBUTreeAutCore::Reduce() const
 {
 	ExplicitTreeAutCore explAut;
 	this->translateToExplicit(explAut);
-	auto a = explAut.Reduce();
-	std::cerr << "Reduced states: " << a.GetStatesNumber() << "; Reduction to " << (a.GetStatesNumber()/(explAut.GetStatesNumber()/100)) << "% of original size"  << '\n';
+
+	VATA::SimParam simParam;
+	simParam.SetNumStates(explAut.GetStatesNumber());
+	simParam.SetRelation(VATA::SimParam::e_sim_relation::TA_UPWARD);
+
+	StateDiscontBinaryRelation sim = explAut.ComputeSimulation(simParam);
+	sim.RestrictToSymmetric(); // sim is now an equivalence relation
+
+	using StateToStateMap = std::unordered_map<StateType, StateType>;
+	StateToStateMap collapseMap;
+	sim.GetQuotientProjection(collapseMap);
+
+	BDDBUTreeAutCore reduced;
+	this->ReindexStates(reduced, collapseMap);
+
+	return reduced;
+	//auto aut1 = reduced.RemoveUnreachableStates();
+	//auto aut = aut1.RemoveUselessStates();
+	//ExplicitTreeAutCore ra;
+	//aut.translateToExplicit(ra);
+	
+	//bool r1 = BDDBUTreeAutCore::CheckInclusion(*this, aut);
+	//bool r2 = BDDBUTreeAutCore::CheckInclusion(aut, *this);
+	//bool r1 = ExplicitTreeAutCore::CheckInclusion(explAut, ra);
+	//bool r2 = ExplicitTreeAutCore::CheckInclusion(ra, explAut);
+	//std::cerr << "Incl res: " << r1 << " " << r2 << '\n';
+
+	//ExplicitTreeAutCore aut = this->CollapseStates(collapseMap);
+
+	//auto aut = this->RemoveUnreachableStates();
+/*
+	ExplicitTreeAutCore explAut;
+	this->translateToExplicit(explAut);
+	auto ra = explAut.Reduce();
+	*/
+	//std::cerr << "States " << explAut.GetStatesNumber() << " Reduced states: " << ra.GetStatesNumber() << "; Reduction to " /* << (ra.GetStatesNumber()/(explAut.GetStatesNumber()/100)) */ << "% of original size"  << '\n';
 }
 
 std::string BDDBUTreeAutCore::DumpToDot() const

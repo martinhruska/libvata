@@ -355,9 +355,10 @@ public:   // methods
 	}
 
 
+	template <class Index>
 	TransMTBDD ReindexStates(
 		BDDBUTreeAutCore&          dstAut,
-		StateToStateTranslWeak&    stateTrans) const;
+		Index&                     stateTrans) const;
 
 
 	BDDBUTreeAutCore ReindexStates(
@@ -500,7 +501,7 @@ public:   // methods
 	StateDiscontBinaryRelation ComputeSimulation(
 		const SimParam&                 /* params */) const;
 
-	void Reduce() const;
+	BDDBUTreeAutCore Reduce() const;
 
 	StateBinaryRelation ComputeDownwardSimulation() const;
 
