@@ -92,6 +92,18 @@ public:   // methods
 		}
 	}
 
+
+	virtual ResultType at(const InputType& value) const
+	{
+		return (*this)(value);
+	}
+
+
+	virtual ResultType operator[](const InputType& value)
+	{
+		return (*this)(value);
+	}
+
 	/**
 	 * @brief  Finds the value if it is known by the translator
 	 */
