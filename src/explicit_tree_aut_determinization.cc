@@ -293,7 +293,5 @@ ExplicitTreeAutCore ExplicitTreeAutCore::Determinization() const
 		processed.insert(actState);
 	}
 
-
-
 	return explAut;
 }
