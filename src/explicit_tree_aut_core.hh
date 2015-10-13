@@ -1141,6 +1141,8 @@ public:   // methods
 
 	ExplicitTreeAutCore Complement() const;
 
+	ExplicitTreeAutCore DeterministicComplement() const;
+
 
 	bool IsLangEmpty() const
 	{

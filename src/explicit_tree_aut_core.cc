@@ -302,10 +302,12 @@ ExplicitTreeAutCore ExplicitTreeAutCore::Reduce(
 	 > StateMap;
      */
 
+	/*
 	auto dta = this->Determinization();
 	std::cerr << "NFA states number: " << this->GetStatesNumber() << " DFA states number: " << dta.GetStatesNumber() << '\n';
  
 	return dta;
+	*/
 
 	 using StateMap = std::unordered_map<StateType, StateType>;
   
@@ -355,6 +357,24 @@ ExplicitTreeAutCore ExplicitTreeAutCore::Reduce(
 	// aut = aut.RemoveUnreachableStates(sim, Util::TranslatorStrict<StateMap>(stateMap));
 
 	return aut;
+}
+
+
+ExplicitTreeAutCore ExplicitTreeAutCore::DeterministicComplement() const
+{
+	ExplicitTreeAutCore complAut(*this, true, false);
+
+	const auto& usedStates = this->GetUsedStates();
+
+	for (const auto& state : usedStates)
+	{
+		if (!this->IsStateFinal(state))
+		{
+			complAut.SetStateFinal(state);
+		}
+	}
+
+	return complAut;
 }
 
 
