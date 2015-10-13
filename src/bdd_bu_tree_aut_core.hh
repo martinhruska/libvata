@@ -195,8 +195,8 @@ private:  // methods
 	}
 
 
-	void translateToExplicit(
-		ExplicitTreeAutCore&      explAut) const;
+	ExplicitTreeAutCore translateToExplicit(
+			std::unordered_map<size_t, SymbolicVarAsgn>* transl=nullptr) const;
 
 
 	template <
@@ -494,6 +494,8 @@ public:   // methods
 		const BDDBUTreeAutCore&     smaller,
 		const BDDBUTreeAutCore&     bigger,
 		const VATA::InclParam&      params);
+	
+	BDDBUTreeAutCore Complement() const;
 
 
 	BDDTDTreeAutCore GetTopDownAut() const;

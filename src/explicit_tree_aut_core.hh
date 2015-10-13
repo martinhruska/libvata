@@ -23,6 +23,8 @@
 #include <vata/explicit_lts.hh>
 #include <vata/incl_param.hh>
 
+#include "bdd_bu_tree_aut_core.hh"
+
 #include "util/cache.hh"
 
 
@@ -1167,6 +1169,8 @@ public:   // methods
 
 	ExplicitTreeAutCore Determinization() const;
 
+	BDDBUTreeAutCore TranslateToBDDBU(
+			const std::unordered_map<size_t, SymbolicVarAsgn>& transl) const;
 
 	template <
 		class SymbolTranslateF>

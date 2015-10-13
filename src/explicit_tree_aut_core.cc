@@ -374,7 +374,27 @@ ExplicitTreeAutCore ExplicitTreeAutCore::DeterministicComplement() const
 		}
 	}
 
+	//assert(ExplicitTreeAutCore::Intersection(complAut,*this).IsLangEmpty());
+
 	return complAut;
+}
+	
+VATA::BDDBUTreeAutCore ExplicitTreeAutCore::TranslateToBDDBU(
+		const std::unordered_map<size_t, SymbolicVarAsgn>& transl) const
+{
+	BDDBUTreeAutCore res;
+
+	for (const auto& state : this->GetFinalStates())
+	{
+		res.SetStateFinal(state);
+	}
+
+	for (const auto& trans : *this)
+	{
+		res.AddTransition(trans.GetChildren(), transl.at(trans.GetSymbol()), trans.GetParent());
+	}
+
+	return res;
 }
 
 

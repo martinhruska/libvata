@@ -219,11 +219,7 @@ public:   // methods
 
 	BDDBottomUpTreeAut GetCandidateTree() const;
 
-
-	BDDBottomUpTreeAut Complement() const
-	{
-		throw NotImplementedException(__func__);
-	}
+	BDDBottomUpTreeAut Complement() const;
 
 
 	static BDDBottomUpTreeAut Union(

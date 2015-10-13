@@ -219,8 +219,10 @@ BDDTDTreeAutCore BDDBUTreeAutCore::GetTopDownAut() const
 	return result;
 }
 
-void BDDBUTreeAutCore::translateToExplicit(
-	ExplicitTreeAutCore&      explAut) const{
+VATA::ExplicitTreeAutCore BDDBUTreeAutCore::translateToExplicit(
+		std::unordered_map<size_t, SymbolicVarAsgn>* transl) const
+{
+	ExplicitTreeAutCore explAut;
 
 	// copy final states
 	for (const StateType& fst : finalStates_)
@@ -248,6 +250,10 @@ void BDDBUTreeAutCore::translateToExplicit(
 				if (!symbolMap.count(symbolStr))
 				{
 					symbolMap[symbolStr] = symbolCnt;
+					if (transl != nullptr)
+					{
+						(*transl)[symbolCnt] = SymbolicVarAsgn(path.first);
+					}
 					++symbolCnt;
 				}
 
@@ -258,12 +264,12 @@ void BDDBUTreeAutCore::translateToExplicit(
 	}
 
 	//std::cerr << "States: " << explAut.GetStatesNumber() << "; Symbols: " << symbolCnt << "\n";
+	return explAut;
 }
 
 BDDBUTreeAutCore BDDBUTreeAutCore::Reduce() const
 {
-	ExplicitTreeAutCore explAut;
-	this->translateToExplicit(explAut);
+	ExplicitTreeAutCore explAut = translateToExplicit();
 
 	VATA::SimParam simParam;
 	simParam.SetNumStates(explAut.GetStatesNumber());
@@ -300,6 +306,23 @@ BDDBUTreeAutCore BDDBUTreeAutCore::Reduce() const
 	auto ra = explAut.Reduce();
 	*/
 	//std::cerr << "States " << explAut.GetStatesNumber() << " Reduced states: " << ra.GetStatesNumber() << "; Reduction to " /* << (ra.GetStatesNumber()/(explAut.GetStatesNumber()/100)) */ << "% of original size"  << '\n';
+}
+	
+
+BDDBUTreeAutCore BDDBUTreeAutCore::Complement() const
+{
+	std::unordered_map<size_t, SymbolicVarAsgn> transl;
+	ExplicitTreeAutCore aut = this->translateToExplicit(&transl);
+
+	std::cerr << "STATES: " << aut.GetStatesNumber() << "\n";
+
+	auto deter = aut.Determinization();
+	auto comp = deter.DeterministicComplement();
+	return comp.TranslateToBDDBU(transl);
+
+	//auto isec = BDDBUTreeAutCore::Intersection(*this, res);
+	//assert(isec.translateToExplicit().IsLangEmpty());
+	// return res;
 }
 
 std::string BDDBUTreeAutCore::DumpToDot() const
