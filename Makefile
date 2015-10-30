@@ -16,9 +16,6 @@ release:
 doc:
 	cd $(BUILD_DIR) && $(MAKE) $(MAKE_FLAGS) doc
 
-test:
-	cd $(BUILD_DIR) && ctest $(TEST_FLAGS)
-
 clean:
 	cd $(BUILD_DIR) && rm -rf *
 	rm -rf html

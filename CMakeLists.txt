@@ -178,5 +178,3 @@ endif()
 # Process subdirectories
 add_subdirectory(src)
 add_subdirectory(cli)
-add_subdirectory(unit_tests)
-add_subdirectory(tests)
