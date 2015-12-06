@@ -2,6 +2,7 @@ from cli_options_enums import OperationsEnum, EncodingsEnum
 from cli_operation_representation import Command
 import vata_executor
 import command_serializer
+from vata_result import VATAResult
 
 # This module provides functions corresponding to the
 # operations that VATA provides over tree automata
@@ -15,6 +16,9 @@ import command_serializer
 # are provided by VATA CLI by parameter options (if it is available).
 # The options should be represented by the class from
 # module operation_options
+
+def load_string(aut, enc=EncodingsEnum.EXPL):
+    return VATAResult(aut, None, 0)
 
 def load(aut, enc=EncodingsEnum.EXPL):
     return __runCommand(Command(enc, OperationsEnum.LOAD, [aut]))

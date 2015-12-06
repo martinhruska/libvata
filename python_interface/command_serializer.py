@@ -1,5 +1,7 @@
 import cli_options_enums
 
+import os
+
 ENCODING_PARAM = '-r'
 OPTION_PARAM = '-o'
 
@@ -10,7 +12,14 @@ def __serializeOperation(operation):
     return [cli_options_enums.OperationsToStringCommand[operation]]
 
 def __serializeOperands(operands):
-    return operands
+    res = []
+    for o in operands:
+        if isinstance(o, str):
+            res.append(o)
+        else:
+            res.append(o.toPath())
+
+    return res
 
 def __serializeOptions(command, options):
     res = options.serialize() \
