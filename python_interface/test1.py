@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# TODO: testovaci framework
+# TODO: Interni reprezentace automatu
+# TODO: Use case na python rozhrani, co by se dalo delat s automata
+# TODO: Test suite na konecne automaty; Ondrovo git repositar
+
 AUT1 = """
     Ops
     Automaton A6
@@ -21,6 +26,7 @@ AUT1 = """
     """
 
 AUT2 = """
+    Ops
     Automaton A7
 
     States q6:0 q5:0 q4:0 q3:0 q2:0 q1:0 q0:0
