@@ -5,6 +5,8 @@
 # TODO: Use case na python rozhrani, co by se dalo delat s automata
 # TODO: Test suite na konecne automaty; Ondrovo git repositar
 
+import vata_interface
+
 AUT1 = """
     Ops
     Automaton A6
@@ -46,20 +48,20 @@ AUT2 = """
     """
 
 if __name__ == '__main__':
-    aut1 = vata_load_string(AUT1)
-    aut2 = vata_load_string(AUT2)
+    aut1 = vata_interface.load_string(AUT1)
+    aut2 = vata_interface.load_string(AUT2)
 
     # union of aut1 and aut2
-    aut_union = vata_union(aut1, aut2)
+    aut_union = vata_interface.union(aut1, aut2)
 
     # assert invariants
     # TODO: maybe keep only one direction of inclusion?
     assert aut1.is_included(aut_union)
     assert aut_union.includes(aut2)
-    assert vata_inclusion(aut1, aut_union)
-    assert vata_inclusion(aut2, aut_union)
+    assert vata_interface.inclusion(aut1, aut_union)
+    assert vata_interface.inclusion(aut2, aut_union)
 
     # complement of aut1
-    aut1_cmpl = vata_complement(aut1)
-    assert vata_intersection(aut1, aut1_cmpl).is_lang_empty()
-    assert vata_union(aut1, aut1_cmpl).is_lang_universal()
+    #aut1_cmpl = vata_complement(aut1)
+    #assert vata_intersection(aut1, aut1_cmpl).is_lang_empty()
+    #assert vata_union(aut1, aut1_cmpl).is_lang_universal()

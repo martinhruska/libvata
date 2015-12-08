@@ -41,4 +41,4 @@ AUT = """
     red(q3,q6) -> q5
     """
 
-vata_interface.load_string(AUT).load().print()
+vata_interface.load_string(AUT).load().includes(t).print()
