@@ -4,10 +4,12 @@ from vata_result import VATAResult
 VATA_PATH = '../build/cli/vata'
 UTF8 = "utf-8"
 
-def __decodeBytes(bts):
+
+def __decode_bytes(bts):
     return bts.decode(UTF8) if bts is not None else None
 
-def runVata(command, timeout=None):
+
+def run_vata(command, timeout=None):
     """
         Function executes VATA CLI and returns it output printed to
         stdout and stderr
@@ -17,8 +19,8 @@ def runVata(command, timeout=None):
             that would be given to CLI directly in command line
         @return VATAResult saves output of CLI at stdout and stderr
     """
-    vata = subprocess.Popen([VATA_PATH]+command, \
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    vata = subprocess.Popen([VATA_PATH] + command,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     res = vata.communicate(timeout=timeout)
-    returnCode = vata.returncode
-    return VATAResult(__decodeBytes(res[0]), __decodeBytes(res[1]), returnCode)
+    return_code = vata.returncode
+    return VATAResult(__decode_bytes(res[0]), __decode_bytes(res[1]), return_code)

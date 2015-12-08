@@ -2,8 +2,10 @@
 # There are enumerations for possible operations, direction of operations,
 # algorithms and also for the different encodings of automata.
 
+
 class Unknown(object):
     UNKNOWN = -1
+
 
 class OperationsEnum(object):
     LOAD = 0
@@ -20,17 +22,18 @@ class OperationsEnum(object):
     MIN = LOAD
     MAX = HELP
 
-OperationsToStringCommand = {\
-       OperationsEnum.LOAD : 'load',
-       OperationsEnum.WITNESS : 'witness',
-       OperationsEnum.CMPL : 'cmpl',
-       OperationsEnum.UNION : 'union',
-       OperationsEnum.ISECT : 'isect',
-       OperationsEnum.SIM : 'sim',
-       OperationsEnum.RED : 'red',
-       OperationsEnum.EQUIV : 'equiv',
-       OperationsEnum.INCL : 'incl',
-       OperationsEnum.HELP : 'help'}
+OPERATIONS_TO_STRING_COMMAND = {
+    OperationsEnum.LOAD: 'load',
+    OperationsEnum.WITNESS: 'witness',
+    OperationsEnum.CMPL: 'cmpl',
+    OperationsEnum.UNION: 'union',
+    OperationsEnum.ISECT: 'isect',
+    OperationsEnum.SIM: 'sim',
+    OperationsEnum.RED: 'red',
+    OperationsEnum.EQUIV: 'equiv',
+    OperationsEnum.INCL: 'incl',
+    OperationsEnum.HELP: 'help'}
+
 
 class DirectionsEnum(object):
     DOWN = 0
@@ -41,13 +44,13 @@ class DirectionsEnum(object):
     MIN = DOWN
     MAX = UP
 
-DirectionsEnumFAToString = {\
-        DirectionsEnum.BWD : 'bwd',
-        DirectionsEnum.FWD : 'fwd'}
+DIRECTIONS_ENUM_FA_TO_STRING = {
+    DirectionsEnum.BWD: 'bwd',
+    DirectionsEnum.FWD: 'fwd'}
 
-DirectionsEnumToString = {\
-        DirectionsEnum.DOWN : 'down',
-        DirectionsEnum.UP : 'up'}
+DIRECTIONS_ENUM_TO_STRING = {
+    DirectionsEnum.DOWN: 'down',
+    DirectionsEnum.UP: 'up'}
 
 
 class OrderEnum(object):
@@ -57,9 +60,9 @@ class OrderEnum(object):
     MIN = BREADTH
     MAX = DEPTH
 
-OrderEnumToString = {\
-        OrderEnum.BREADTH : 'breadth',
-        OrderEnum.DEPTH : 'depth'}
+ORDER_ENUM_TO_STRING = {
+    OrderEnum.BREADTH: 'breadth',
+    OrderEnum.DEPTH: 'depth'}
 
 
 class AlgsEnum(object):
@@ -69,13 +72,14 @@ class AlgsEnum(object):
     MIN = AC
     MAX = CONGR
 
-AlgsEnumToString = {\
-        AlgsEnum.AC : 'antichains',
-        AlgsEnum.CONGR : 'congr'}
+ALGS_ENUM_TO_STRING = {
+    AlgsEnum.AC: 'antichains',
+    AlgsEnum.CONGR: 'congr'}
 
-BoolToString = {\
-        True : 'yes',
-        False : 'no'}
+BOOL_TO_STRING = {
+    True: 'yes',
+    False: 'no'}
+
 
 class EncodingsEnum(object):
     EXPL = 0
@@ -86,14 +90,12 @@ class EncodingsEnum(object):
     MIN = EXPL
     MAX = EXPL_FA
 
-EncodingToString = {\
-        EncodingsEnum.EXPL : 'expl',
-        EncodingsEnum.EXPL_FA : 'expl_fa',
-        EncodingsEnum.BDD_TD : 'bdd-td',
-        EncodingsEnum.BDD_BU : 'bdd-bu'}
+ENCODING_TO_STRING = {
+    EncodingsEnum.EXPL: 'expl',
+    EncodingsEnum.EXPL_FA: 'expl_fa',
+    EncodingsEnum.BDD_TD: 'bdd-td',
+    EncodingsEnum.BDD_BU: 'bdd-bu'}
 
-def isCorrectCode(code, enum):
-    if code >= enum.MIN and code <= enum.MAX:
-        return True
-    else:
-        return False
+
+def is_correct_code(code, enum):
+    return code >= enum.MIN and code <= enum.MAX

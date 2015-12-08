@@ -1,5 +1,6 @@
 import cli_options_enums
 
+
 class Command(object):
     """
         Class represents command of VATA CLI. It keeps information
@@ -10,22 +11,23 @@ class Command(object):
         and the additional opetions can be specified by structures
         in module operation_options.
     """
-    def __init__(self, encoding=cli_options_enums.EncodingsEnum.EXPL, \
-            instructionCode=cli_options_enums.Unknown.UNKNOWN, \
-            operands=[], options=None):
+
+    def __init__(self, encoding=cli_options_enums.EncodingsEnum.EXPL,
+                 instructionCode=cli_options_enums.Unknown.UNKNOWN,
+                 operands=[], options=None):
         self.__enconding = encoding
         self.__operation = instructionCode
         self.__operands = operands
         self.__options = options
 
-    def getEncoding(self):
+    def get_encoding(self):
         return self.__enconding
 
-    def getOperation(self):
+    def get_operation(self):
         return self.__operation
 
-    def getOperands(self):
+    def get_operands(self):
         return self.__operands
 
-    def getOptions(self):
+    def get_options(self):
         return self.__options

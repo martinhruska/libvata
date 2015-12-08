@@ -17,35 +17,50 @@ from vata_result import VATAResult
 # The options should be represented by the class from
 # module operation_options
 
+
 def load_string(aut, enc=EncodingsEnum.EXPL):
     return VATAResult(aut, None, 0)
 
+
 def load(aut, enc=EncodingsEnum.EXPL):
-    return __runCommand(Command(enc, OperationsEnum.LOAD, [aut]))
+    return __run_command(Command(enc, OperationsEnum.LOAD, [aut]))
+
 
 def complement(aut, enc=EncodingsEnum.EXPL):
-    return __runCommand(Command(enc, OperationsEnum.CMPL, [aut]))
+    return __run_command(Command(enc, OperationsEnum.CMPL, [aut]))
+
 
 def witness(aut, enc=EncodingsEnum.EXPL):
-    return __runCommand(Command(enc, OperationsEnum.WITNESS, [aut]))
+    return __run_command(Command(enc, OperationsEnum.WITNESS, [aut]))
+
 
 def intersection(lhs, rhs, enc=EncodingsEnum.EXPL):
-    return __runCommand(Command(enc, OperationsEnum.ISECT, [lhs, rhs]))
+    return __run_command(Command(enc, OperationsEnum.ISECT, [lhs, rhs]))
+
 
 def union(lhs, rhs, enc=EncodingsEnum.EXPL):
-    return __runCommand(Command(enc, OperationsEnum.UNION, [lhs, rhs]))
+    return __run_command(Command(enc, OperationsEnum.UNION, [lhs, rhs]))
+
 
 def simulation(aut, enc=EncodingsEnum.EXPL, options=None):
-    return __runCommand(Command(enc, OperationsEnum.SIM, [aut], options))
+    return __run_command(Command(enc, OperationsEnum.SIM, [aut], options))
+
 
 def reduction(aut, enc=EncodingsEnum.EXPL, options=None):
-    return __runCommand(Command(enc, OperationsEnum.RED, [aut], options))
+    return __run_command(Command(enc, OperationsEnum.RED, [aut], options))
+
 
 def inclusion(lhs, rhs, enc=EncodingsEnum.EXPL, options=None):
-    return __runCommand(Command(enc, OperationsEnum.INCL, [lhs, rhs], options))
+    return __run_command(Command(enc, OperationsEnum.INCL, [lhs, rhs], options))
+
 
 def equivalence(lhs, rhs, enc=EncodingsEnum.EXPL, options=None):
-    return __runCommand(Command(enc, OperationsEnum.EQUIV, [lhs, rhs], options))
+    return __run_command(
+        Command(
+            enc, OperationsEnum.EQUIV, [
+                lhs, rhs], options))
 
-def __runCommand(operation):
-    return vata_executor.runVata(command_serializer.serializeCommand(operation))
+
+def __run_command(operation):
+    return vata_executor.run_vata(
+        command_serializer.serialize_command(operation))
