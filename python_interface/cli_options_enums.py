@@ -34,6 +34,7 @@ OPERATIONS_TO_STRING_COMMAND = {
     OperationsEnum.INCL: 'incl',
     OperationsEnum.HELP: 'help'}
 
+STRING_TO_OPERATIONS = {v:k for k,v in OPERATIONS_TO_STRING_COMMAND.items()}
 
 class DirectionsEnum(object):
     DOWN = 0

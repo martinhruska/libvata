@@ -5,7 +5,7 @@ class Command(object):
     """
         Class represents command of VATA CLI. It keeps information
         about operation, operands and additional options if needed.
-        Operands are represented by a list of the path to files
+        Operands are represented by a list of the paths to files
         over which an operation should be performed.
         Operation is one from the enumeration given in cli_options_enums
         and the additional opetions can be specified by structures

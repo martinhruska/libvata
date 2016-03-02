@@ -27,7 +27,7 @@ class VATAResult(object):
         of VATA CLI exection.
     """
 
-    def __init__(self, stdout, stderr, result):
+    def __init__(self, stdout, stderr="", result=""):
         self.stdout = stdout
         self.stderr = stderr
         self.result = result
@@ -89,3 +89,6 @@ class VATAResult(object):
         self.temp = tempfile.NamedTemporaryFile(delete=False)
         self.write_stdout_to_path(self.temp.name)
         return self.temp.name
+
+    def get_stdout(self):
+        return self.stdout
