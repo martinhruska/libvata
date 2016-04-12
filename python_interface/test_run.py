@@ -1,11 +1,21 @@
 #! /usr/bin/python3
 
+
+# TODO:
+# 1) + automaton as a result of operation
+# 2) + configuration of VATA run
+# 3) + unarni operace -- need testing
+# 4) nicer exception
+# 5) refactor  exception
+
+
 from enum import Enum
 import sys
 import os.path
 
 from cli_options_enums import STRING_TO_OPERATIONS, OperationsEnum
 import vata_interface
+
 
 OPERATION_CODE_TO_FUNCTION = {
     OperationsEnum.LOAD: vata_interface.load,
@@ -25,6 +35,44 @@ RESULT_POSITION = 2
 FUNCTION_POSITION = 0
 
 
+def process_number_result(real, expected):
+    """
+    Just compare whether the results which are supposed
+    to be numbers are same.
+    This is the case of inclusion and equivalence.
+    """
+    return str(expected) == str(real)
+
+
+def process_automata_result(real, expected):
+    """
+    Expect one automata in VATAResult format and one strin in @p expected
+    which can be parsed to the mentioned class.
+    """
+    expected_parsed = vata_interface.load_string(expected)
+    real_parsed = vata_interface.load_string(real)
+    return expected_parsed.is_included(real_parsed).get_stdout().strip() == "1"\
+            and real_parsed.is_included(expected_parsed).get_stdout().strip() == "1"
+
+
+OPERATION_CODE_TO_RESULT_PROCESSING = {
+    OperationsEnum.LOAD:      process_automata_result,
+    OperationsEnum.WITNESS:   process_automata_result,
+    OperationsEnum.CMPL:      process_automata_result,
+    OperationsEnum.UNION:     process_automata_result,
+    OperationsEnum.ISECT:     process_automata_result,
+    OperationsEnum.RED:       process_automata_result,
+    OperationsEnum.EQUIV:     process_number_result,
+    OperationsEnum.INCL:      process_number_result}
+
+
+OPERATION_UNARY = [OperationsEnum.LOAD, OperationsEnum.WITNESS,\
+        OperationsEnum.CMPL, OperationsEnum.RED]
+
+OPERATION_CONFIG = [OperationsEnum.RED, OperationsEnum.EQUIV,\
+        OperationsEnum.INCL]
+
+
 class TestType(Enum):
     TEXT = 0
     FUNCTION = TEXT + 1
@@ -37,6 +85,7 @@ def __print_help():
         "          .... {load, witness, cmpl, union, isect, sim, red, equiv,\
                 incl}")
     print("test_suite .... path to a test definition")
+    print("test_config .... path to a test configuration")
 
 
 def __is_binary(operation_code):
@@ -60,19 +109,33 @@ def __preprocess_test(test):
                      for t in test[0:len(test) - 1]) + test[-1:]
 
 
-def __run_test(operation, test_set):
+def __perform_operation(operation_code, operands, config = None):
+    function = OPERATION_CODE_TO_FUNCTION[operation_code]
+    if operation_code in OPERATION_UNARY:
+        if operation_code in OPERATION_CONFIG:
+            return function(operands[LHS_POSITION], options=config)
+        else:
+            return function(operands[LHS_POSITION])
+    else:
+        if operation_code in OPERATION_CONFIG:
+            return function(operands[LHS_POSITION], operands[RHS_POSITION], options=config)
+        else:
+            return function(operands[LHS_POSITION], operands[RHS_POSITION])
+
+
+def __run_test(operation, test_set, config=None):
     test_ok = 0
     for test in test_set:
         test = __preprocess_test(test)
         is_test_function = __get_test_type(test) == TestType.FUNCTION
 
+        operation_code = STRING_TO_OPERATIONS[operation]
         vata_res = test[FUNCTION_POSITION]() if is_test_function else\
-            OPERATION_CODE_TO_FUNCTION[STRING_TO_OPERATIONS[operation]](
-                test[LHS_POSITION], test[RHS_POSITION])
+                __perform_operation(operation_code, test[:-1], config)
         vata_res_serialized =\
             vata_res if is_test_function else vata_res.get_stdout().strip()
 
-        test_res = str(vata_res_serialized) == str(test[-1])
+        test_res = OPERATION_CODE_TO_RESULT_PROCESSING[operation_code](vata_res_serialized, test[-1])
         if test_res:
             print(str(test) + ' [OK]')
         else:
@@ -82,8 +145,9 @@ def __run_test(operation, test_set):
     print('Passed tests [' + str(test_ok) +
           '/' + str(len(test_set)) + ']')
 
+
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 3 and len(sys.argv) != 4:
         __print_help()
         sys.exit()
 
@@ -102,9 +166,21 @@ if __name__ == '__main__':
     TEST_MODULE = __import__(TEST_MODULE_NAME)
     try:
         TEST_MODULE.TEST
-    except NameError:
-        print("You have to define variable TEST as\
-              a list of tuples in test suite")
+    except AttributeError:
+        print('You have to define variable TEST as'+\
+                'a list of tuples in test suite')
         sys.exit()
 
-    __run_test(OPERATION, TEST_MODULE.TEST)
+    CONFIG_MODULE_NAME = sys.argv[3].replace('.py', '')\
+            if (len(sys.argv) == 4) else TEST_MODULE_NAME
+    assert os.path.isfile(CONFIG_MODULE_NAME+'.py')
+    CONFIG_MODULE = __import__(CONFIG_MODULE_NAME)
+
+    CONFIG = None
+    try:
+        CONFIG_MODULE.CONFIG
+        CONFIG = CONFIG_MODULE.CONFIG
+    except AttributeError:
+        pass
+
+    __run_test(OPERATION, TEST_MODULE.TEST, CONFIG)
