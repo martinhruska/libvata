@@ -1,4 +1,5 @@
 import vata_interface
+import operation_options
 
 AUT1 = """
     Ops
@@ -40,6 +41,32 @@ AUT2 = """
     red(q3,q6) -> q5
     """
 
+AUT_UNION = """
+    Ops
+    Automaton anonymous
+    States
+    Final States q5_1 q5_2
+    Transitions
+    black -> q1_1
+    black -> q1_2
+    bot0 -> q0_1
+    bot0 -> q0_2
+    bot2(q0_1, q0_1) -> q0_1
+    bot2(q0_1, q0_1) -> q1_1
+    bot2(q0_2, q0_2) -> q1_2
+    black(q1_1, q1_1) -> q3_1
+    black(q1_2, q1_2) -> q3_2
+    black(q3_1, q3_1) -> q2_1
+    black(q3_1, q3_1) -> q4_1
+    red(q3_1, q3_1) -> q5_1
+    black(q3_2, q3_2) -> q4_2
+    red(q3_2, q3_2) -> q5_2
+    red(q3_2, q6_2) -> q5_2
+    bot1(q4_1) -> q5_1
+    bot1(q4_2) -> q5_2
+    bot1(q5_2) -> q6_2
+    """
+
 def test():
     aut1 = vata_interface.load_string(AUT1)
     aut2 = vata_interface.load_string(AUT2)
@@ -64,3 +91,6 @@ def pokus():
 TEST = [('../automata/small_timbuk/inclusion_4_smaller', '../automata/small_timbuk/inclusion_4_bigger', '0'),
         (AUT1, AUT2, 0),
         (test,1)]
+
+#CONFIG = operation_options.InclusionOption()
+#TEST = [(AUT1, AUT2, AUT_UNION)]
