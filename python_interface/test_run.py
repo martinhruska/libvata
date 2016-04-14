@@ -50,30 +50,30 @@ def __process_automata_result(real, expected):
     Expect one automata in VATAResult format and one strin in @p expected
     which can be parsed to the mentioned class.
     """
-    expected_parsed = vata_interface.load(expected) if os.path.isfile(expected)\
-            else vata_interface.load_string(expected)
+    expected_parsed = vata_interface.load(expected) if os.path.isfile(
+        expected) else vata_interface.load_string(expected)
     real_parsed = vata_interface.load_string(real)
     return expected_parsed.is_included(real_parsed).get_stdout().strip() == "1"\
-            and real_parsed.is_included(expected_parsed).get_stdout().strip() == "1"
+        and real_parsed.is_included(expected_parsed).get_stdout().strip() == "1"
 
 
 OPERATION_CODE_TO_RESULT_PROCESSING = {
-    OperationsEnum.LOAD:      __process_automata_result,
-    OperationsEnum.WITNESS:   __process_automata_result,
-    OperationsEnum.CMPL:      __process_automata_result,
-    OperationsEnum.UNION:     __process_automata_result,
-    OperationsEnum.ISECT:     __process_automata_result,
-    OperationsEnum.RED:       __process_automata_result,
-    OperationsEnum.EQUIV:     __process_number_result,
-    OperationsEnum.INCL:      __process_number_result}
+    OperationsEnum.LOAD: __process_automata_result,
+    OperationsEnum.WITNESS: __process_automata_result,
+    OperationsEnum.CMPL: __process_automata_result,
+    OperationsEnum.UNION: __process_automata_result,
+    OperationsEnum.ISECT: __process_automata_result,
+    OperationsEnum.RED: __process_automata_result,
+    OperationsEnum.EQUIV: __process_number_result,
+    OperationsEnum.INCL: __process_number_result}
 
 
-OPERATION_UNARY = [OperationsEnum.LOAD, OperationsEnum.WITNESS,\
-        OperationsEnum.CMPL, OperationsEnum.RED]
+OPERATION_UNARY = [OperationsEnum.LOAD, OperationsEnum.WITNESS,
+                   OperationsEnum.CMPL, OperationsEnum.RED]
 
 
-OPERATION_CONFIG = [OperationsEnum.RED, OperationsEnum.EQUIV,\
-        OperationsEnum.INCL]
+OPERATION_CONFIG = [OperationsEnum.RED, OperationsEnum.EQUIV,
+                    OperationsEnum.INCL]
 
 
 class TestType(Enum):
@@ -112,7 +112,7 @@ def __preprocess_test(test):
                      for t in test[0:len(test) - 1]) + test[-1:]
 
 
-def __perform_operation(operation_code, operands, config = None):
+def __perform_operation(operation_code, operands, config=None):
     function = OPERATION_CODE_TO_FUNCTION[operation_code]
     if operation_code in OPERATION_UNARY:
         if operation_code in OPERATION_CONFIG:
@@ -121,7 +121,10 @@ def __perform_operation(operation_code, operands, config = None):
             return function(operands[LHS_POSITION])
     else:
         if operation_code in OPERATION_CONFIG:
-            return function(operands[LHS_POSITION], operands[RHS_POSITION], options=config)
+            return function(
+                operands[LHS_POSITION],
+                operands[RHS_POSITION],
+                options=config)
         else:
             return function(operands[LHS_POSITION], operands[RHS_POSITION])
 
@@ -134,11 +137,12 @@ def __run_test(operation, test_set, config=None):
 
         operation_code = STRING_TO_OPERATIONS[operation]
         vata_res = test[FUNCTION_POSITION]() if is_test_function else\
-                __perform_operation(operation_code, test[:-1], config)
+            __perform_operation(operation_code, test[:-1], config)
         vata_res_serialized =\
             vata_res if is_test_function else vata_res.get_stdout().strip()
 
-        test_res = OPERATION_CODE_TO_RESULT_PROCESSING[operation_code](vata_res_serialized, test[-1])
+        test_res = OPERATION_CODE_TO_RESULT_PROCESSING[
+            operation_code](vata_res_serialized, test[-1])
         if test_res:
             print(str(test) + ' [OK]')
         else:
@@ -170,18 +174,17 @@ if __name__ == '__main__':
     try:
         TEST_MODULE.TEST
     except AttributeError:
-        print('You have to define variable TEST as'+\
-                'a list of tuples in test suite')
+        print('You have to define variable TEST as' +
+              'a list of tuples in test suite')
         sys.exit()
 
     CONFIG_MODULE_NAME = sys.argv[3].replace('.py', '')\
-            if (len(sys.argv) == 4) else TEST_MODULE_NAME
-    assert os.path.isfile(CONFIG_MODULE_NAME+'.py')
+        if (len(sys.argv) == 4) else TEST_MODULE_NAME
+    assert os.path.isfile(CONFIG_MODULE_NAME + '.py')
     CONFIG_MODULE = __import__(CONFIG_MODULE_NAME)
 
     CONFIG = None
     try:
-        CONFIG_MODULE.CONFIG
         CONFIG = CONFIG_MODULE.CONFIG
     except AttributeError:
         pass

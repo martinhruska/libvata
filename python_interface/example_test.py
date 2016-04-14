@@ -67,6 +67,7 @@ AUT_UNION = """
     bot1(q5_2) -> q6_2
     """
 
+
 def test():
     aut1 = vata_interface.load_string(AUT1)
     aut2 = vata_interface.load_string(AUT2)
@@ -88,10 +89,15 @@ def test():
 def pokus():
     return 1
 
-#TEST = [('../automata/small_timbuk/inclusion_4_smaller', '../automata/small_timbuk/inclusion_4_bigger', '0'),
+# TEST = [('../automata/small_timbuk/inclusion_4_smaller', '../automata/small_timbuk/inclusion_4_bigger', '0'),
 #        (AUT1, AUT2, 0),
 #        (test,1)]
 
 CONFIG = operation_options.InclusionOption()
-TEST = [(AUT1, AUT2, AUT_UNION),
-        ('../automata/small_timbuk/union_3_lhs', '../automata/small_timbuk/union_3_rhs', '../automata/small_timbuk/union_3_result')]
+TEST = [
+    (AUT1,
+     AUT2,
+     AUT_UNION),
+    ('../automata/small_timbuk/union_3_lhs',
+     '../automata/small_timbuk/union_3_rhs',
+     '../automata/small_timbuk/union_3_result')]
