@@ -88,9 +88,10 @@ def test():
 def pokus():
     return 1
 
-TEST = [('../automata/small_timbuk/inclusion_4_smaller', '../automata/small_timbuk/inclusion_4_bigger', '0'),
-        (AUT1, AUT2, 0),
-        (test,1)]
+#TEST = [('../automata/small_timbuk/inclusion_4_smaller', '../automata/small_timbuk/inclusion_4_bigger', '0'),
+#        (AUT1, AUT2, 0),
+#        (test,1)]
 
-#CONFIG = operation_options.InclusionOption()
-#TEST = [(AUT1, AUT2, AUT_UNION)]
+CONFIG = operation_options.InclusionOption()
+TEST = [(AUT1, AUT2, AUT_UNION),
+        ('../automata/small_timbuk/union_3_lhs', '../automata/small_timbuk/union_3_rhs', '../automata/small_timbuk/union_3_result')]
