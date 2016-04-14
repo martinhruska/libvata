@@ -7,14 +7,15 @@
 # 3) + unarni operace -- need testing
 # 4) nicer exception
 # 5) automata result can be an automaton in string or file
-# 6) it is all about style
+# 6) + it is all about style
+# 7) Encoding in options
 
 
 from enum import Enum
 import sys
 import os.path
 
-from cli_options_enums import STRING_TO_OPERATIONS, OperationsEnum
+from cli_options_enums import STRING_TO_OPERATIONS, OperationsEnum, EncodingsEnum
 import vata_interface
 
 
@@ -112,24 +113,29 @@ def __preprocess_test(test):
                      for t in test[0:len(test) - 1]) + test[-1:]
 
 
-def __perform_operation(operation_code, operands, config=None):
+def __perform_operation(operation_code, operands,
+                        encoding=EncodingsEnum.EXPL, config=None):
     function = OPERATION_CODE_TO_FUNCTION[operation_code]
     if operation_code in OPERATION_UNARY:
         if operation_code in OPERATION_CONFIG:
-            return function(operands[LHS_POSITION], options=config)
+            return function(operands[LHS_POSITION],
+                            enc=encoding, options=config)
         else:
-            return function(operands[LHS_POSITION])
+            return function(operands[LHS_POSITION], enc=encoding)
     else:
         if operation_code in OPERATION_CONFIG:
             return function(
                 operands[LHS_POSITION],
                 operands[RHS_POSITION],
+                enc=encoding,
                 options=config)
         else:
-            return function(operands[LHS_POSITION], operands[RHS_POSITION])
+            return function(operands[LHS_POSITION], operands[RHS_POSITION],
+                            enc=encoding)
 
 
-def __run_test(operation, test_set, config=None):
+def __run_test(operation, test_set,
+               encoding=EncodingsEnum.EXPL, config=None):
     test_ok = 0
     for test in test_set:
         test = __preprocess_test(test)
@@ -137,7 +143,7 @@ def __run_test(operation, test_set, config=None):
 
         operation_code = STRING_TO_OPERATIONS[operation]
         vata_res = test[FUNCTION_POSITION]() if is_test_function else\
-            __perform_operation(operation_code, test[:-1], config)
+            __perform_operation(operation_code, test[:-1], encoding, config)
         vata_res_serialized =\
             vata_res if is_test_function else vata_res.get_stdout().strip()
 
@@ -189,4 +195,10 @@ if __name__ == '__main__':
     except AttributeError:
         pass
 
-    __run_test(OPERATION, TEST_MODULE.TEST, CONFIG)
+    ENC = EncodingsEnum.EXPL
+    try:
+        ENC = CONFIG_MODULE.ENC
+    except AttributeError:
+        pass
+
+    __run_test(OPERATION, TEST_MODULE.TEST, ENC, CONFIG)

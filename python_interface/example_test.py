@@ -1,5 +1,6 @@
 import vata_interface
 import operation_options
+import cli_options_enums
 
 AUT1 = """
     Ops
@@ -94,6 +95,7 @@ def pokus():
 #        (test,1)]
 
 CONFIG = operation_options.InclusionOption()
+ENC = cli_options_enums.EncodingsEnum.EXPL
 TEST = [
     (AUT1,
      AUT2,
