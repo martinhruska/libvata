@@ -6,7 +6,8 @@
 # 2) + configuration of VATA run
 # 3) + unarni operace -- need testing
 # 4) nicer exception
-# 5) refactor  exception
+# 5) automata result can be an automaton in string or file
+# 6) it is all about style
 
 
 from enum import Enum
@@ -35,7 +36,7 @@ RESULT_POSITION = 2
 FUNCTION_POSITION = 0
 
 
-def process_number_result(real, expected):
+def __process_number_result(real, expected):
     """
     Just compare whether the results which are supposed
     to be numbers are same.
@@ -44,30 +45,32 @@ def process_number_result(real, expected):
     return str(expected) == str(real)
 
 
-def process_automata_result(real, expected):
+def __process_automata_result(real, expected):
     """
     Expect one automata in VATAResult format and one strin in @p expected
     which can be parsed to the mentioned class.
     """
-    expected_parsed = vata_interface.load_string(expected)
+    expected_parsed = vata_interface.load(expected) if os.path.isfile(expected)\
+            else vata_interface.load_string(expected)
     real_parsed = vata_interface.load_string(real)
     return expected_parsed.is_included(real_parsed).get_stdout().strip() == "1"\
             and real_parsed.is_included(expected_parsed).get_stdout().strip() == "1"
 
 
 OPERATION_CODE_TO_RESULT_PROCESSING = {
-    OperationsEnum.LOAD:      process_automata_result,
-    OperationsEnum.WITNESS:   process_automata_result,
-    OperationsEnum.CMPL:      process_automata_result,
-    OperationsEnum.UNION:     process_automata_result,
-    OperationsEnum.ISECT:     process_automata_result,
-    OperationsEnum.RED:       process_automata_result,
-    OperationsEnum.EQUIV:     process_number_result,
-    OperationsEnum.INCL:      process_number_result}
+    OperationsEnum.LOAD:      __process_automata_result,
+    OperationsEnum.WITNESS:   __process_automata_result,
+    OperationsEnum.CMPL:      __process_automata_result,
+    OperationsEnum.UNION:     __process_automata_result,
+    OperationsEnum.ISECT:     __process_automata_result,
+    OperationsEnum.RED:       __process_automata_result,
+    OperationsEnum.EQUIV:     __process_number_result,
+    OperationsEnum.INCL:      __process_number_result}
 
 
 OPERATION_UNARY = [OperationsEnum.LOAD, OperationsEnum.WITNESS,\
         OperationsEnum.CMPL, OperationsEnum.RED]
+
 
 OPERATION_CONFIG = [OperationsEnum.RED, OperationsEnum.EQUIV,\
         OperationsEnum.INCL]
