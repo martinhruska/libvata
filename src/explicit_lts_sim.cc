@@ -14,6 +14,7 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <cmath>
 #include <unordered_set>
 #include <cstddef>
 
