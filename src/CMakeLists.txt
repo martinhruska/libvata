@@ -30,14 +30,6 @@ set(vata_cxx_compiler_add_flags_list
   -Wold-style-cast
 )
 
-# Setting GCC flags for C++ compilation of Bison & Flex outputs
-set(flex_bison_compiler_flags "")
-foreach(param ${basic_c_compiler_flags_list})
-  set(flex_bison_compiler_flags "${flex_bison_compiler_flags} ${param}")
-endforeach(param)
-foreach(param ${basic_cxx_compiler_add_flags_list})
-  set(flex_bison_compiler_flags "${flex_bison_compiler_flags} ${param}")
-endforeach(param)
 
 # Setting GCC flags for compilation of VATA C files
 set(vata_c_compiler_flags "")
@@ -60,41 +52,8 @@ endforeach(param)
 
 include_directories(../include)
 
-flex_target(timbuk_scanner timbuk.l ${CMAKE_CURRENT_BINARY_DIR}/timbuk.l.cc COMPILE_FLAGS "--header-file=${CMAKE_CURRENT_BINARY_DIR}/timbuk.l.hh")
-bison_target(timbuk_parser timbuk.y ${CMAKE_CURRENT_BINARY_DIR}/timbuk.y.cc)
-add_flex_bison_dependency(timbuk_scanner timbuk_parser)
-
 add_library(libvata STATIC
 	aut_base.cc
-	bdd_bu_tree_aut.cc
-	bdd_bu_tree_aut_core.cc
-	bdd_bu_tree_aut_sim.cc
-	bdd_bu_tree_aut_incl.cc
-	bdd_bu_tree_aut_isect.cc
-	bdd_bu_tree_aut_union.cc
-	bdd_bu_tree_aut_union_disj.cc
-	bdd_bu_tree_aut_unreach.cc
-	bdd_bu_tree_aut_useless.cc
-	bdd_td_tree_aut.cc
-	bdd_td_tree_aut_core.cc
-	bdd_td_tree_aut_sim.cc
-	bdd_td_tree_aut_incl.cc
-	bdd_td_tree_aut_isect.cc
-	bdd_td_tree_aut_union.cc
-	bdd_td_tree_aut_union_disj.cc
-	bdd_td_tree_aut_unreach.cc
-	bdd_td_tree_aut_useless.cc
-	explicit_finite_aut.cc
-	explicit_finite_aut_core.cc
-	explicit_finite_union.cc
-	explicit_finite_isect.cc
-	explicit_finite_incl.cc
-	explicit_finite_reverse.cc
-	explicit_finite_useless.cc
-	explicit_finite_unreach.cc
-	explicit_finite_candidate.cc
-	explicit_finite_compl.cc
-	explicit_finite_sim.cc
 	explicit_tree_aut_core.cc
 	explicit_tree_comp_down.cc
 	explicit_tree_incl_down.cc
@@ -115,13 +74,9 @@ add_library(libvata STATIC
 	fmemopen.c
 	symbolic.cc
 	memstream.c
-	timbuk_parser.cc
-	timbuk_serializer.cc
 	util.cc
 	sym_var_asgn.cc
 	symbolic_tree_aut_base_core.cc
-  ${FLEX_timbuk_scanner_OUTPUTS}
-  ${BISON_timbuk_parser_OUTPUTS}
 )
 set_target_properties(libvata PROPERTIES
   OUTPUT_NAME vata
